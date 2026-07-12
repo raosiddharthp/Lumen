@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lumen — Gated Underwriting Evidence &amp; Decision System for NoordLeven Life &amp; Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #fafaf8; --bg2: #f2f0eb; --bg3: #e8e5de;
+  --text: #1a1917; --text2: #5a5852; --text3: #8a8880;
+  --border: #d8d5ce; --border2: #c8c5be;
+  --amber: #b07010; --amber-bg: #fdf4e3; --amber-border: #e8c870;
+  --teal: #0a6b52; --teal-bg: #e8f5f0; --teal-border: #80c8b0;
+  --purple: #4a40b0; --purple-bg: #f0effe; --purple-border: #b0a8e8;
+  --coral: #b03820; --coral-bg: #fdf0ec; --coral-border: #e8a090;
+  --blue: #1850a0; --blue-bg: #eaf2fe; --blue-border: #90b8e8;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+  --r: 6px; --r-lg: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; }
+.page-wrap { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+.sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; background: var(--bg2); border-right: 1px solid var(--border); padding: 2rem 1.25rem; display: flex; flex-direction: column; gap: 0; }
+.sidebar-logo { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
+.sidebar-project { font-family: var(--serif); font-size: 18px; color: var(--text); margin-bottom: 0.25rem; line-height: 1.2; }
+.sidebar-sub { font-size: 11px; color: var(--text3); margin-bottom: 2rem; line-height: 1.4; }
+.sidebar-nav { list-style: none; display: flex; flex-direction: column; gap: 1px; }
+.sidebar-nav a { display: block; font-size: 12px; color: var(--text2); text-decoration: none; padding: 5px 8px; border-radius: var(--r); transition: background 0.15s, color 0.15s; }
+.sidebar-nav a:hover { background: var(--bg3); color: var(--text); }
+.sidebar-nav a.active { background: var(--text); color: var(--bg); }
+.sidebar-nav .sub { padding-left: 20px; font-size: 11px; color: var(--text3); }
+.sidebar-nav .sub:hover { color: var(--text2); }
+.stack-block { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.stack-title { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.75rem; }
+.stack-item { font-size: 11px; color: var(--text2); padding: 4px 0; border-bottom: 1px solid var(--border); line-height: 1.3; }
+.stack-item strong { display: block; color: var(--text); font-weight: 500; font-size: 11px; }
+
+.main { padding: 0; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 2.5rem; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(250,250,248,0.95); backdrop-filter: blur(8px); z-index: 100; }
+.topbar-breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.topbar-tag { font-family: var(--mono); font-size: 10px; padding: 3px 8px; background: var(--bg3); border-radius: 99px; color: var(--text2); }
+
+.content { padding: 3rem 2.5rem 5rem; max-width: 860px; }
+
+.doc-header { margin-bottom: 3rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); }
+.doc-eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 10.5px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.25rem; }
+.doc-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.doc-title { font-family: var(--serif); font-size: clamp(28px, 4vw, 44px); font-weight: 400; line-height: 1.15; letter-spacing: -0.01em; color: var(--text); margin-bottom: 0.75rem; }
+.doc-title em { font-style: italic; color: var(--teal); }
+.doc-byline { font-size: 13px; color: var(--text3); display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 2rem; }
+.doc-disclaimer { font-size: 12px; color: var(--text3); font-style: italic; border-left: 2px solid var(--border2); padding-left: 12px; margin-bottom: 2rem; line-height: 1.6; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; margin: 0 0 2.5rem; }
+.stat-cell { padding: 1.25rem 1.5rem; border-right: 1px solid var(--border); background: white; }
+.stat-cell:last-child { border-right: none; }
+.stat-value { font-family: var(--serif); font-size: 30px; font-weight: 400; line-height: 1; margin-bottom: 4px; }
+.stat-value.amber { color: var(--amber); }
+.stat-value.teal { color: var(--teal); }
+.stat-value.purple { color: var(--purple); }
+.stat-value.coral { color: var(--coral); }
+.stat-label { font-family: var(--mono); font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.4; }
+
+.section { margin-bottom: 4.5rem; scroll-margin-top: 90px; }
+.section-heading { font-family: var(--serif); font-size: 27px; font-weight: 400; color: var(--text); margin-bottom: 1.25rem; display: flex; align-items: baseline; gap: 12px; }
+.section-num { font-family: var(--mono); font-size: 12px; color: var(--text3); }
+.section-kicker { font-style: italic; color: var(--text3); font-size: 14px; margin: -0.75rem 0 1.5rem; }
+.subsection-heading { font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--text); margin: 2.25rem 0 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; scroll-margin-top: 90px; }
+.subsection-heading::before { content: ''; display: block; width: 20px; height: 1px; background: var(--border2); }
+.body-text { font-size: 14.5px; line-height: 1.75; color: var(--text2); margin-bottom: 1rem; }
+.body-text strong { color: var(--text); font-weight: 500; }
+.body-text code { font-family: var(--mono); font-size: 12px; background: var(--bg3); padding: 1px 5px; border-radius: 3px; color: var(--text); }
+
+.callout { border-left: 2px solid var(--border2); padding: 1rem 1.25rem; margin: 1.5rem 0; background: var(--bg2); }
+.callout.amber { border-color: var(--amber-border); background: var(--amber-bg); }
+.callout.teal { border-color: var(--teal-border); background: var(--teal-bg); }
+.callout.purple { border-color: var(--purple-border); background: var(--purple-bg); }
+.callout.blue { border-color: var(--blue-border); background: var(--blue-bg); }
+.callout.coral { border-color: var(--coral-border); background: var(--coral-bg); }
+.callout-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 4px; }
+.callout.amber .callout-label { color: var(--amber); }
+.callout.teal .callout-label { color: var(--teal); }
+.callout.purple .callout-label { color: var(--purple); }
+.callout.blue .callout-label { color: var(--blue); }
+.callout.coral .callout-label { color: var(--coral); }
+.callout-body { font-size: 13.5px; line-height: 1.65; color: var(--text2); }
+.callout-body em { color: var(--text); font-style: italic; }
+
+.figure { margin: 2rem 0; }
+.figure-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
+.figure-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.figure-sublabel { font-size: 12px; color: var(--text3); font-style: italic; margin-bottom: 0.75rem; }
+.figure-body { border: 1px solid var(--border); border-radius: var(--r-lg); background: white; padding: 1.5rem; overflow-x: auto; }
+.figure-note { font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
+
+.comp-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 1.5rem 0; }
+.comp-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; background: var(--bg2); }
+.comp-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+.comp-table td:first-child { font-weight: 500; color: var(--text); }
+.comp-table tr:last-child td { border-bottom: none; }
+
+.card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1.5rem 0; }
+.p-card { border: 1px solid var(--border); border-radius: var(--r-lg); background: white; padding: 1.25rem 1.4rem; scroll-margin-top: 90px; }
+.p-card-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.6rem; }
+.p-card-name { font-family: var(--serif); font-size: 17px; color: var(--text); }
+.p-card-tag { font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 99px; }
+.p-card-field { font-size: 12.5px; line-height: 1.6; margin-bottom: 6px; color: var(--text2); }
+.p-card-field strong { display: block; font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 1px; }
+
+.adr-card { border: 1px solid var(--border); border-radius: var(--r-lg); background: white; padding: 1.25rem 1.5rem; margin-bottom: 1rem; scroll-margin-top: 90px; }
+.adr-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px; }
+.adr-id { font-family: var(--mono); font-size: 11px; color: var(--teal); font-weight: 500; }
+.adr-title { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--text); }
+.adr-row { font-size: 12.5px; line-height: 1.6; color: var(--text2); margin-bottom: 6px; }
+.adr-row strong { color: var(--text); font-weight: 500; }
+
+.us-card { border-left: 2px solid var(--teal-border); background: var(--teal-bg); border-radius: 0 var(--r) var(--r) 0; padding: 0.9rem 1.1rem; margin-bottom: 0.75rem; }
+.us-id { font-family: var(--mono); font-size: 10px; color: var(--teal); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.us-story { font-size: 13.5px; color: var(--text); line-height: 1.6; margin-bottom: 6px; font-style: italic; }
+.us-ac { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+.pipeline-steps { display: flex; gap: 0; margin: 1.5rem 0; align-items: stretch; flex-wrap: wrap; }
+.pipe-step { flex: 1; min-width: 140px; border: 1px solid var(--border); border-right: none; padding: 1rem 0.875rem; background: white; position: relative; }
+.pipe-step:last-child { border-right: 1px solid var(--border); border-radius: 0 var(--r) var(--r) 0; }
+.pipe-step:first-child { border-radius: var(--r) 0 0 var(--r); }
+.pipe-num { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-bottom: 4px; }
+.pipe-name { font-family: var(--sans); font-size: 12.5px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.pipe-owner { font-size: 11px; color: var(--text3); }
+
+.sim-box { border: 1px solid var(--border); border-radius: var(--r-lg); background: white; overflow: hidden; }
+.sim-scenarios { display: flex; gap: 8px; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; background: var(--bg2); }
+.scenario-btn { font-family: var(--mono); font-size: 11px; padding: 6px 12px; border: 1px solid var(--border2); border-radius: 99px; background: white; color: var(--text2); cursor: pointer; transition: all 0.15s; }
+.scenario-btn:hover { border-color: var(--teal-border); color: var(--teal); }
+.scenario-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.sim-desc { padding: 1rem 1.25rem; font-size: 12.5px; color: var(--text2); line-height: 1.6; border-bottom: 1px solid var(--border); }
+.sim-stages { display: flex; padding: 1.25rem; gap: 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.sim-stage { flex: 1; min-width: 90px; text-align: center; position: relative; padding: 0 6px; }
+.stage-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border2); margin: 0 auto 8px; transition: all 0.2s; }
+.stage-dot.running { background: var(--amber); border-color: var(--amber); animation: pulse 0.8s infinite; }
+.stage-dot.done { background: var(--teal); border-color: var(--teal); }
+.stage-dot.blocked { background: var(--coral); border-color: var(--coral); }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+.stage-name { font-family: var(--sans); font-size: 11px; font-weight: 500; color: var(--text); }
+.stage-owner { font-size: 9.5px; color: var(--text3); margin-top: 1px; }
+.stage-bar { height: 2px; background: var(--border); margin-top: 8px; overflow: hidden; }
+.stage-bar-fill { height: 100%; width: 0; background: var(--teal); transition: width 0.4s; }
+.stage-timing { font-family: var(--mono); font-size: 9.5px; color: var(--text3); margin-top: 4px; }
+.stage-timing.done { color: var(--teal); }
+.sim-controls { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border); }
+.run-btn { font-family: var(--mono); font-size: 12px; padding: 7px 18px; background: var(--text); color: var(--bg); border: none; border-radius: var(--r); cursor: pointer; }
+.run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.sim-status { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.sim-status.running { color: var(--amber); }
+.sim-status.done { color: var(--teal); }
+.sim-output { font-family: var(--mono); font-size: 12px; line-height: 1.8; padding: 1.25rem; background: #16150f; color: #d8d5ce; max-height: 340px; overflow-y: auto; }
+.out-line { display: block; }
+.out-comment { color: #7a8570; }
+.out-warn { color: #d8a84a; }
+.out-key { color: #8ba8c8; }
+.out-val { color: #d8d5ce; }
+
+.carousel { border: 1px solid var(--border); border-radius: var(--r-lg); background: white; overflow: hidden; }
+.carousel-nav { display: flex; gap: 4px; padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border); background: var(--bg2); overflow-x: auto; }
+.slide-btn { font-family: var(--mono); font-size: 10.5px; padding: 5px 10px; border: 1px solid var(--border2); border-radius: 99px; background: white; color: var(--text3); cursor: pointer; white-space: nowrap; }
+.slide-btn.active { background: var(--purple); color: white; border-color: var(--purple); }
+.slide-panel { display: none; padding: 2.5rem; min-height: 320px; }
+.slide-panel.active { display: block; }
+.slide-headline { font-family: var(--serif); font-size: 22px; color: var(--text); margin-bottom: 0.5rem; line-height: 1.25; }
+.slide-sub { font-size: 13px; color: var(--text3); margin-bottom: 1.25rem; }
+.slide-note { font-size: 12.5px; color: var(--text2); background: var(--bg2); border-left: 2px solid var(--purple-border); padding: 0.75rem 1rem; margin-top: 1.25rem; font-style: italic; }
+
+.cost-summary { display: flex; gap: 1rem; align-items: flex-start; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--bg2); padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+.cost-summary-icon { color: var(--amber); flex-shrink: 0; margin-top: 2px; }
+.cost-summary-body { font-size: 13.5px; line-height: 1.7; color: var(--text2); }
+.sources-note { margin: 1.5rem 0; padding: 1rem 1.25rem; border: 1px solid var(--border); border-radius: var(--r-lg); background: white; }
+.sources-note-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 0.5rem; }
+.sources-note-body { font-size: 11.5px; color: var(--text3); line-height: 1.7; }
+
+.dbox { fill: white; stroke: var(--border2); stroke-width: 1.5; }
+.dbox-agent { fill: var(--teal-bg); stroke: var(--teal-border); stroke-width: 1.5; }
+.dbox-ext { fill: var(--blue-bg); stroke: var(--blue-border); stroke-width: 1.5; }
+.dbox-reg { fill: var(--amber-bg); stroke: var(--amber-border); stroke-width: 1.5; }
+.dbox-gate { fill: var(--coral-bg); stroke: var(--coral-border); stroke-width: 1.5; }
+.dtext { font-family: 'Inter', sans-serif; fill: var(--text); }
+.dtext-sm { font-family: 'IBM Plex Mono', monospace; fill: var(--text3); }
+.darrow { stroke: var(--text3); stroke-width: 1.3; fill: none; marker-end: url(#arrow); }
+.darrow-dash { stroke: var(--coral); stroke-width: 1.3; fill: none; stroke-dasharray: 4 3; marker-end: url(#arrow); }
+
+footer.doc-footer { border-top: 1px solid var(--border); padding: 2.5rem; text-align: center; font-size: 12px; color: var(--text3); font-style: italic; }
+
+@media (max-width: 900px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; }
+  .card-grid { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<nav class="sidebar">
+  <div class="sidebar-logo">NoordLeven Life &amp; Health</div>
+  <div class="sidebar-project">Lumen</div>
+  <div class="sidebar-sub">Gated Underwriting Evidence &amp; Decision System — living design document</div>
+  <ul class="sidebar-nav">
+    <li><a href="#s1">01 · Client Brief</a></li>
+    <li><a href="#s2">02 · Stakeholder Profiles</a></li>
+    <li><a href="#s2-anchor" class="sub">Anchor Case</a></li>
+    <li><a href="#s3">03 · Problem Statement</a></li>
+    <li><a href="#s4">04 · As-Is Process</a></li>
+    <li><a href="#s5">05 · Regulatory &amp; Operational Exposure</a></li>
+    <li><a href="#s6">06 · User Stories</a></li>
+    <li><a href="#s7">07 · Proposed Design</a></li>
+    <li><a href="#s8">08 · Simulation</a></li>
+    <li><a href="#s9">09 · Success Metrics</a></li>
+    <li><a href="#s10">10 · ADRs</a></li>
+    <li><a href="#s11">11 · Objection Handling</a></li>
+    <li><a href="#s12">12 · Cost Analysis</a></li>
+    <li><a href="#s13">13 · Rollout Roadmap</a></li>
+    <li><a href="#s14">14 · Stakeholder Deck</a></li>
+  </ul>
+  <div class="stack-block">
+    <div class="stack-title">Register</div>
+    <div class="stack-item"><strong>5 Gated Agents</strong>each one job, explainable, observable</div>
+    <div class="stack-item"><strong>6 ADRs</strong>rationale, rejected alternatives</div>
+    <div class="stack-item"><strong>EU AI Act</strong>Annex III, point 5(c) — direct, not analogous</div>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-breadcrumb">noordleven / lumen / design-doc</div>
+    <div class="topbar-right"><span class="topbar-tag">fictional client — portfolio artefact</span></div>
+  </div>
+
+  <div class="content">
+
+  <header class="doc-header" id="top">
+    <div class="doc-eyebrow">Living design document</div>
+    <h1 class="doc-title">Lumen <em>— Gated Underwriting<br/>Evidence &amp; Decision System</em></h1>
+    <div class="doc-byline">
+      <span>Client: NoordLeven Life &amp; Health N.V.</span>
+      <span>Sponsor: Anke Voss, Chief Underwriting Officer</span>
+      <span>Track: Complex Risk Underwriting — EU AI Act Readiness</span>
+    </div>
+    <div class="doc-disclaimer">NoordLeven Life &amp; Health, Anke Voss, every named stakeholder, and the case reference in §2 are fictional constructs built for this portfolio piece. The EU AI Act's classification of life and health insurance risk assessment and pricing as a high-risk use under Annex III, point 5(c), its 2 August 2026 enforcement date, and the cited Articles (9, 10, 12, 13, 14, 15, 27) describe the real Regulation (EU) 2024/1689. This document is an architecture exercise, not legal advice — the obligation mapping in §7 would need confirmation from qualified counsel before any real implementation.</div>
+    <div class="stat-grid">
+      <div class="stat-cell"><div class="stat-value coral">22</div><div class="stat-label">Days to Annex III high-risk enforcement (2 Aug 2026)</div></div>
+      <div class="stat-cell"><div class="stat-value amber">4,100</div><div class="stat-label">Complex cases/year, no structured evidence trail</div></div>
+      <div class="stat-cell"><div class="stat-value purple">3</div><div class="stat-label">Disconnected sources an underwriter checks manually</div></div>
+      <div class="stat-cell"><div class="stat-value teal">5</div><div class="stat-label">Gated agents, each with exactly one job</div></div>
+    </div>
+  </header>
+
+  <!-- ============ SECTION 1 ============ -->
+  <section class="section" id="s1">
+    <h2 class="section-heading"><span class="section-num">01</span> Client Brief</h2>
+    <p class="section-kicker">NoordLeven Life &amp; Health — the anchor client.</p>
+
+    <p class="body-text">A composite of real EU life and health insurer patterns. NoordLeven has underwritten personal risk since 1974 from Amsterdam, passporting term life, whole life, critical illness, and income protection cover across nine EU member states under Solvency II freedom of services. An automated straight-through engine handles the roughly 92% of new business applications that present standard risk. The remaining share — a material health history, a hazardous occupation, an unusually high sum assured — falls to manual underwriting, exactly the population the EU AI Act now names directly.</p>
+
+    <p class="body-text">Chief Underwriting Officer Anke Voss is accountable for underwriting quality and consistency across the complex-risk book, and has become, in the last two quarters, the internal owner of Annex III readiness for the pricing and risk-assessment process her team runs — a responsibility that arrived alongside her existing one, not instead of it.</p>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin:1.5rem 0;">
+      <div class="figure-body">
+        <table class="comp-table">
+          <tr><td>Legal name</td><td>NoordLeven Life &amp; Health N.V.</td></tr>
+          <tr><td>Founded</td><td>1974, Amsterdam</td></tr>
+          <tr><td>Licence basis</td><td>Solvency II freedom of services, 9 EU member states</td></tr>
+          <tr><td>Lines</td><td>Term life, whole life, critical illness, income protection</td></tr>
+        </table>
+      </div>
+      <div class="figure-body">
+        <table class="comp-table">
+          <tr><td>In-force policies</td><td>~410,000</td></tr>
+          <tr><td>New business applications / year</td><td>~52,000</td></tr>
+          <tr><td>Automated straight-through rate</td><td>~92% of applications</td></tr>
+          <tr><td>Manually underwritten / year</td><td>~4,100 complex cases</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">What the brief is, precisely</div>
+      <div class="callout-body">Not a replacement for the underwriter's judgement, and not an automated issuance engine. Lumen assembles and grounds the evidence a complex case requires, computes a deterministic rating recommendation, and produces a provenance-tagged draft — every case is still reviewed and signed by a human, always. What changes is whether that human is working from a repeatable, auditable process or from memory and three disconnected sources.</div>
+    </div>
+
+    <div class="figure">
+      <div class="figure-label">Fig. 1.1 — System Context</div>
+      <div class="figure-sublabel">C4 Level 1. No Lumen component yet — establishing the world before proposing anything into it.</div>
+      <div class="figure-body">
+        <svg viewBox="0 0 820 320" width="100%">
+          <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--text3)"/></marker></defs>
+          <rect x="300" y="120" width="220" height="80" rx="8" class="dbox" stroke-width="2"/>
+          <text x="410" y="155" text-anchor="middle" class="dtext" font-size="14" font-weight="600">NoordLeven</text>
+          <text x="410" y="173" text-anchor="middle" class="dtext-sm" font-size="10">the organisation</text>
+
+          <rect x="30" y="30" width="150" height="55" rx="6" class="dbox"/>
+          <text x="105" y="53" text-anchor="middle" class="dtext" font-size="11">Applicants</text>
+          <text x="105" y="68" text-anchor="middle" class="dtext-sm" font-size="9">52,000 / year</text>
+          <path d="M120,85 L340,120" class="darrow"/>
+
+          <rect x="30" y="235" width="150" height="55" rx="6" class="dbox"/>
+          <text x="105" y="258" text-anchor="middle" class="dtext" font-size="11">Underwriters</text>
+          <text x="105" y="273" text-anchor="middle" class="dtext-sm" font-size="9">complex-risk team</text>
+          <path d="M120,235 L340,200" class="darrow"/>
+
+          <rect x="640" y="30" width="150" height="55" rx="6" class="dbox"/>
+          <text x="715" y="53" text-anchor="middle" class="dtext" font-size="11">Medical Officer</text>
+          <text x="715" y="68" text-anchor="middle" class="dtext-sm" font-size="9">Dr. Larsen's role</text>
+          <path d="M700,85 L480,120" class="darrow"/>
+
+          <rect x="600" y="235" width="190" height="55" rx="6" class="dbox-ext"/>
+          <text x="695" y="253" text-anchor="middle" class="dtext" font-size="11">Reinsurer manuals</text>
+          <text x="695" y="268" text-anchor="middle" class="dtext-sm" font-size="9">consulted manually</text>
+          <path d="M660,235 L480,200" class="darrow"/>
+
+          <rect x="330" y="235" width="150" height="55" rx="6" class="dbox-ext"/>
+          <text x="405" y="253" text-anchor="middle" class="dtext" font-size="11">Precedent spreadsheet</text>
+          <text x="405" y="268" text-anchor="middle" class="dtext-sm" font-size="9">unstructured, ad hoc</text>
+          <path d="M405,235 L405,202" class="darrow"/>
+
+          <rect x="30" y="135" width="150" height="55" rx="6" class="dbox-reg"/>
+          <text x="105" y="158" text-anchor="middle" class="dtext" font-size="11">EU AI Act</text>
+          <text x="105" y="173" text-anchor="middle" class="dtext-sm" font-size="9">Annex III, point 5(c)</text>
+          <path d="M180,162 L298,146" class="darrow" stroke-dasharray="3 3"/>
+
+          <rect x="640" y="135" width="150" height="55" rx="6" class="dbox-reg"/>
+          <text x="715" y="158" text-anchor="middle" class="dtext" font-size="11">DPO / Compliance</text>
+          <text x="715" y="173" text-anchor="middle" class="dtext-sm" font-size="9">Dubois's role</text>
+          <path d="M638,162 L522,146" class="darrow" stroke-dasharray="3 3"/>
+        </svg>
+      </div>
+      <div class="figure-note">Two of the three information sources are outside any system underwriters can query in one place — that gap is §3's finding, not a rendering omission.</div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 2 ============ -->
+  <section class="section" id="s2">
+    <h2 class="section-heading"><span class="section-num">02</span> Stakeholder Profiles</h2>
+    <p class="section-kicker">Six people, one regulatory deadline, one case that moves through all of them.</p>
+    <p class="body-text">Template used throughout: <strong>Goal · Measured by · Resistance · Success looks like.</strong></p>
+
+    <div class="card-grid">
+      <div class="p-card" id="p-voss"><div class="p-card-head"><span class="p-card-name">Anke Voss</span><span class="p-card-tag" style="background:var(--purple-bg);color:var(--purple)">Chief Underwriting Officer, Sponsor</span></div>
+        <div class="p-card-field"><strong>Goal</strong>Consistent, defensible complex-case decisions across her team, provable to a reinsurer auditor or a regulator on request.</div>
+        <div class="p-card-field"><strong>Measured by</strong>Rating consistency across underwriters on comparable cases; audit findings; complex-case cycle time.</div>
+        <div class="p-card-field"><strong>Resistance</strong>Owns Annex III readiness now, on top of her existing role, with a fixed external deadline she did not set.</div>
+        <div class="p-card-field"><strong>Success</strong>Can show, for any case, exactly what evidence produced the decision — without reconstructing it after the fact.</div></div>
+
+      <div class="p-card" id="p-verhoeven"><div class="p-card-head"><span class="p-card-name">Lucas Verhoeven</span><span class="p-card-tag" style="background:var(--teal-bg);color:var(--teal)">Senior Underwriter, Complex Risk</span></div>
+        <div class="p-card-field"><strong>Goal</strong>Spend his time weighing evidence and exercising judgement, not hunting for it across three sources.</div>
+        <div class="p-card-field"><strong>Measured by</strong>Case quality on audit; cycle time; consistency with peer decisions on comparable risk.</div>
+        <div class="p-card-field"><strong>Resistance</strong>Will not accept a tool that decides for him, or that produces a draft he can't verify line by line.</div>
+        <div class="p-card-field"><strong>Success</strong>Opens a case to a grounded evidence summary and a draft he edits and signs — never one he's asked to rubber-stamp.</div></div>
+
+      <div class="p-card" id="p-larsen"><div class="p-card-head"><span class="p-card-name">Dr. Ingrid Larsen</span><span class="p-card-tag" style="background:var(--coral-bg);color:var(--coral)">Chief Medical Officer</span></div>
+        <div class="p-card-field"><strong>Goal</strong>Every case that genuinely needs her medical judgement reaches her — and only those cases.</div>
+        <div class="p-card-field"><strong>Measured by</strong>Referral appropriateness; medical decision quality; her own exposure if a referral is missed.</div>
+        <div class="p-card-field"><strong>Resistance</strong>Will not trust a citation she cannot independently verify against the source document.</div>
+        <div class="p-card-field"><strong>Success</strong>A mandatory-referral list she trusts completely, and evidence she can check in seconds rather than reconstruct from scratch.</div></div>
+
+      <div class="p-card" id="p-nowak"><div class="p-card-head"><span class="p-card-name">Tomas Nowak</span><span class="p-card-tag" style="background:var(--blue-bg);color:var(--blue)">Head of Actuarial Pricing</span></div>
+        <div class="p-card-field"><strong>Goal</strong>Rating outputs stay fully reproducible and owned by his team's validated methodology, not by a model he can't audit.</div>
+        <div class="p-card-field"><strong>Measured by</strong>Pricing accuracy against experience data; model risk governance sign-off.</div>
+        <div class="p-card-field"><strong>Resistance</strong>Will block any design where an LLM computes or adjusts a premium loading, even indirectly.</div>
+        <div class="p-card-field"><strong>Success</strong>The rating calculation is exactly his team's existing, versioned methodology — Lumen changes how fast evidence reaches it, not what it computes.</div></div>
+
+      <div class="p-card" id="p-dubois"><div class="p-card-head"><span class="p-card-name">Camille Dubois</span><span class="p-card-tag" style="background:var(--amber-bg);color:var(--amber)">DPO &amp; AI Act Compliance Lead</span></div>
+        <div class="p-card-field"><strong>Goal</strong>A system she can defend against Annex III's specific obligations, article by article, not a general assurance that "it's been thought about."</div>
+        <div class="p-card-field"><strong>Measured by</strong>Conformity documentation completeness; FRIA status; audit and regulator readiness.</div>
+        <div class="p-card-field"><strong>Resistance</strong>Has seen governance retrofitted after deployment before, and knows how expensive that is to fix.</div>
+        <div class="p-card-field"><strong>Success</strong>Every Annex III obligation has a named architectural mechanism, not a policy document promising one.</div></div>
+
+      <div class="p-card" id="p-deboer"><div class="p-card-head"><span class="p-card-name">Rutger de Boer</span><span class="p-card-tag" style="background:var(--purple-bg);color:var(--purple)">Head of Data &amp; AI Platform</span></div>
+        <div class="p-card-field"><strong>Goal</strong>A system sized to what four underwriters and a compliance team actually need — not a platform he's still operating five years from now.</div>
+        <div class="p-card-field"><strong>Measured by</strong>Build and run cost against the 4,100-case annual volume; observability coverage.</div>
+        <div class="p-card-field"><strong>Resistance</strong>Wary of scope creep — "while we're at it" additions that turn a five-node graph into a platform.</div>
+        <div class="p-card-field"><strong>Success</strong>One structured log per agent run is enough to reconstruct any case — no SIEM, no knowledge graph, no RLHF pipeline required.</div></div>
+    </div>
+
+    <h3 class="subsection-heading" id="s2-anchor">Anchor Case</h3>
+    <p class="body-text">One case is followed through this document, referenced only by case number — consistent with the data-minimisation principle Dubois's role exists to enforce, and a reasonable practice in its own right.</p>
+    <div class="p-card" style="margin-bottom:1.5rem;">
+      <div class="p-card-head"><span class="p-card-name">Case Ref #A-24471</span><span class="p-card-tag" style="background:var(--teal-bg);color:var(--teal)">Term life · €500,000 · 25-year term</span></div>
+      <div class="p-card-field"><strong>Presenting factor</strong>Applicant, five years post-treatment for early-stage breast cancer, now in stable remission, seeking standard-rate consideration.</div>
+      <div class="p-card-field"><strong>What it requires</strong>Current reinsurer guidance on post-treatment mortality loading at this interval, any comparable internal precedent, and a rating decision Verhoeven can stand behind — with Dr. Larsen's sign-off if it falls outside pre-validated bands.</div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 3 ============ -->
+  <section class="section" id="s3">
+    <h2 class="section-heading"><span class="section-num">03</span> Problem Statement</h2>
+    <p class="section-kicker">Not a shortage of expertise. An absence of a structured trail for how that expertise is applied.</p>
+    <p class="body-text">Verhoeven and his colleagues are skilled underwriters. The gap is structural: for a complex case, evidence is assembled from memory and habit — a reinsurer manual referenced because it's the one the underwriter remembers, a precedent pulled from a spreadsheet if anyone thought to log it, a literature check done only when the case feels unusual enough to warrant it. Which sources were actually considered, and why, is rarely recorded in a form anyone could reconstruct later.</p>
+
+    <div class="callout coral">
+      <div class="callout-label">Failure 1 — Evidence is habit, not process</div>
+      <div class="callout-body">Two underwriters handling comparable cases may consult different sources, in a different order, and arrive at different conclusions — and neither case file shows which evidence was weighed or why.</div>
+    </div>
+    <div class="callout amber">
+      <div class="callout-label">Failure 2 — Divergence is invisible</div>
+      <div class="callout-body">Without a structured record, NoordLeven cannot measure whether comparable cases are rated consistently across underwriters — a live fairness and data-governance question the moment a system like Lumen is expected to answer it.</div>
+    </div>
+    <div class="callout purple">
+      <div class="callout-label">Failure 3 — Nothing survives the decision</div>
+      <div class="callout-body">There is no case-level artefact showing a regulator, a reinsurer auditor, or the applicant themselves exactly which evidence produced a given premium loading, months or years after the fact.</div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">Precise problem statement</div>
+      <div class="callout-body"><em>NoordLeven has no structured, auditable mechanism connecting the evidence an underwriter considers to the rating decision they reach on a complex case — so consistency across underwriters cannot be measured, and the evidentiary basis for any single decision cannot be reconstructed afterward, at exactly the moment Annex III makes that reconstruction a legal expectation, not a best practice.</em></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 4 ============ -->
+  <section class="section" id="s4">
+    <h2 class="section-heading"><span class="section-num">04</span> As-Is Process</h2>
+    <p class="section-kicker">A capable underwriter, three disconnected sources, and nothing retained in structured form.</p>
+
+    <div class="figure">
+      <div class="figure-label">Fig. 4.1 — As-Is Complex Case Flow</div>
+      <div class="figure-sublabel">Every step past the automated engine is manual, undocumented in structure, and dependent on individual habit.</div>
+      <div class="figure-body">
+        <svg viewBox="0 0 820 260" width="100%">
+          <rect x="20" y="100" width="140" height="60" rx="6" class="dbox"/>
+          <text x="90" y="126" text-anchor="middle" class="dtext" font-size="10.5">Application</text>
+          <text x="90" y="142" text-anchor="middle" class="dtext-sm" font-size="8.5">52,000 / year</text>
+
+          <rect x="210" y="100" width="140" height="60" rx="6" class="dbox-agent"/>
+          <text x="280" y="126" text-anchor="middle" class="dtext" font-size="10.5">STP Engine</text>
+          <text x="280" y="142" text-anchor="middle" class="dtext-sm" font-size="8.5">~92% auto-issued</text>
+          <path d="M160,130 L208,130" class="darrow"/>
+
+          <rect x="400" y="100" width="150" height="60" rx="6" class="dbox-gate"/>
+          <text x="475" y="126" text-anchor="middle" class="dtext" font-size="10.5">Complex queue</text>
+          <text x="475" y="142" text-anchor="middle" class="dtext-sm" font-size="8.5">~4,100 / year</text>
+          <path d="M280,160 L280,190 L400,130" class="darrow-dash"/>
+
+          <rect x="610" y="20" width="180" height="50" rx="6" class="dbox-ext"/>
+          <text x="700" y="40" text-anchor="middle" class="dtext" font-size="10">Reinsurer manuals</text>
+          <text x="700" y="55" text-anchor="middle" class="dtext-sm" font-size="8.5">consulted manually</text>
+          <path d="M550,120 L610,50" class="darrow"/>
+
+          <rect x="610" y="90" width="180" height="50" rx="6" class="dbox-ext"/>
+          <text x="700" y="110" text-anchor="middle" class="dtext" font-size="10">Precedent spreadsheet</text>
+          <text x="700" y="125" text-anchor="middle" class="dtext-sm" font-size="8.5">unstructured, ad hoc</text>
+          <path d="M550,130 L610,115" class="darrow"/>
+
+          <rect x="610" y="160" width="180" height="50" rx="6" class="dbox-ext"/>
+          <text x="700" y="180" text-anchor="middle" class="dtext" font-size="10">Literature, ad hoc</text>
+          <text x="700" y="195" text-anchor="middle" class="dtext-sm" font-size="8.5">when the case feels unusual</text>
+          <path d="M550,140 L610,180" class="darrow"/>
+
+          <rect x="400" y="200" width="150" height="50" rx="6" class="dbox"/>
+          <text x="475" y="220" text-anchor="middle" class="dtext" font-size="10">Decision letter</text>
+          <text x="475" y="235" text-anchor="middle" class="dtext-sm" font-size="8.5">drafted, evidence not retained</text>
+          <path d="M475,160 L475,198" class="darrow"/>
+        </svg>
+      </div>
+      <div class="figure-note">Dashed line: the handoff into the complex queue carries no structured context — the underwriter starts each case from zero.</div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 5 ============ -->
+  <section class="section" id="s5">
+    <h2 class="section-heading"><span class="section-num">05</span> Regulatory &amp; Operational Exposure</h2>
+    <p class="section-kicker">Not a future compliance project. A live one, with a fixed date.</p>
+
+    <p class="body-text">The EU AI Act names this exact activity. Annex III, point 5(c) classifies AI systems used for risk assessment and pricing in relation to natural persons in life and health insurance as high-risk, and the associated obligations — a documented risk management system (Art. 9), data governance over training and reference data (Art. 10), automatic event logging sufficient for post-hoc reconstruction (Art. 12), a transparency duty toward the people affected (Art. 13), meaningful human oversight (Art. 14), and demonstrable accuracy and robustness (Art. 15) — become enforceable on 2 August 2026. Guidance from the EU AI Office has indicated these obligations extend to systems already in production, not only new deployments, which is why this is a live remediation question for NoordLeven's underwriting process now, whether or not Lumen is built. As an insurer, NoordLeven is also within the category of deployer named under Article 27's fundamental rights impact assessment requirement — a governance action item this document flags but does not resolve; that determination sits with Dubois and external counsel, not with this architecture.</p>
+
+    <div class="cost-summary">
+      <div class="cost-summary-icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div class="cost-summary-body">
+        <strong>The exposure has two distinct components, and they should not be conflated.</strong> The compliance component — demonstrating a risk management system, data governance, logging, transparency, oversight, and accuracy for a high-risk system by 2 August 2026 — carries penalty exposure of up to €15M or 3% of worldwide annual turnover for high-risk obligation breaches. The operational component — 4,100 cases a year handled without a repeatable evidence process — is a consistency and quality cost NoordLeven carries regardless of the Act. Lumen addresses both from the same architecture, but they are separately real, and neither should be used to inflate the other in front of a board.
+      </div>
+    </div>
+
+    <div class="sources-note">
+      <div class="sources-note-label">Regulatory Sources</div>
+      <div class="sources-note-body">
+        Regulation (EU) 2024/1689 (the EU AI Act), Annex III, point 5(c) — life and health insurance risk assessment and pricing, high-risk classification.<br>
+        Articles 9, 10, 12, 13, 14, 15 — risk management, data governance, record-keeping, transparency, human oversight, accuracy and robustness obligations for high-risk systems.<br>
+        Article 27 — fundamental rights impact assessment for specified deployer categories, including insurers.<br>
+        Enforcement date: 2 August 2026, per Article 6(2)/Annex III phased application. A proposed Digital Omnibus simplification package was under legislative discussion as of mid-2026 and had not been adopted; this document plans against the enacted date.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 6 ============ -->
+  <section class="section" id="s6">
+    <h2 class="section-heading"><span class="section-num">06</span> User Stories</h2>
+
+    <div class="us-card"><div class="us-id">US-01 · Senior Underwriter</div>
+      <div class="us-story">As a senior underwriter, I want the relevant reinsurer guidance and internal precedent for a complex case gathered and cited automatically, so that I spend my time weighing evidence rather than searching for it.</div>
+      <div class="us-ac">Acceptance: every piece of evidence resolves to a real, checkable source; nothing is presented without a citation the underwriter can open and verify.</div></div>
+
+    <div class="us-card"><div class="us-id">US-02 · Chief Medical Officer</div>
+      <div class="us-story">As Chief Medical Officer, I want every case matching a mandatory-referral condition routed to me regardless of how confident the system is, so that no borderline case is ever auto-resolved around me.</div>
+      <div class="us-ac">Acceptance: the mandatory-referral check is a deterministic policy list, not a confidence score, and cannot be overridden by a high grounding score.</div></div>
+
+    <div class="us-card"><div class="us-id">US-03 · Head of Actuarial Pricing</div>
+      <div class="us-story">As Head of Actuarial Pricing, I want the rating calculation to remain my team's own versioned methodology, so that no premium figure is ever produced by an LLM performing arithmetic.</div>
+      <div class="us-ac">Acceptance: the Rating Engine is deterministic code operating on structured inputs; the LLM never touches the calculation, only the evidence feeding it and the prose describing it.</div></div>
+
+    <div class="us-card"><div class="us-id">US-04 · DPO &amp; Compliance Lead</div>
+      <div class="us-story">As the AI Act compliance lead, I want each Annex III obligation mapped to a specific mechanism in the system, so that our conformity documentation is a description of what exists, not a commitment to build it later.</div>
+      <div class="us-ac">Acceptance: §7's obligation mapping table is reviewed against the actual implementation before go-live, not treated as aspirational.</div></div>
+
+    <div class="us-card"><div class="us-id">US-05 · Chief Underwriting Officer</div>
+      <div class="us-story">As the executive sponsor, I want to be able to pull any closed complex case and see exactly what evidence produced the rating decision, so that I can answer a reinsurer auditor or a regulator without reconstruction work.</div>
+      <div class="us-ac">Acceptance: every case has a single structured record linking evidence, rating output, draft, and the human sign-off that closed it.</div></div>
+  </section>
+
+  <!-- ============ SECTION 7 ============ -->
+  <section class="section" id="s7">
+    <h2 class="section-heading"><span class="section-num">07</span> Proposed Design</h2>
+    <p class="section-kicker">Five gated agents. Each does exactly one job. Nothing is auto-issued — Lumen drafts, a human always decides.</p>
+
+    <p class="body-text">The design deliberately rejects both a single do-everything agent and a sprawling multi-agent platform. Each node below has one responsibility, a defined input/output contract, and a pass/fail gate before the next node runs.</p>
+
+    <div class="pipeline-steps">
+      <div class="pipe-step"><div class="pipe-num">01</div><div class="pipe-name">Research Agent</div><div class="pipe-owner">LLM · retrieves &amp; cites from two corpora</div></div>
+      <div class="pipe-step"><div class="pipe-num">02</div><div class="pipe-name">Grounding Gate</div><div class="pipe-owner">LLM, scoring only · pass/fail</div></div>
+      <div class="pipe-step"><div class="pipe-num">03</div><div class="pipe-name">Rating Engine</div><div class="pipe-owner">Deterministic code, not an LLM</div></div>
+      <div class="pipe-step"><div class="pipe-num">04</div><div class="pipe-name">Referral Gate</div><div class="pipe-owner">Deterministic policy check</div></div>
+      <div class="pipe-step"><div class="pipe-num">05</div><div class="pipe-name">Drafting Agent</div><div class="pipe-owner">LLM, provenance-tagged only</div></div>
+    </div>
+
+    <div class="figure">
+      <div class="figure-label">Fig. 7.1 — Gated Agent Graph</div>
+      <div class="figure-sublabel">One deliberate divergence from a standard retry pattern: after two failed grounding attempts, the case hard-stops to a human — it does not deliver a lower-confidence draft.</div>
+      <div class="figure-body">
+        <svg viewBox="0 0 820 300" width="100%">
+          <rect x="20" y="110" width="140" height="55" rx="6" class="dbox-agent"/>
+          <text x="90" y="132" text-anchor="middle" class="dtext" font-size="10.5">Research Agent</text>
+          <text x="90" y="148" text-anchor="middle" class="dtext-sm" font-size="8.5">2 corpora, cited</text>
+
+          <rect x="200" y="110" width="140" height="55" rx="6" class="dbox-gate"/>
+          <text x="270" y="132" text-anchor="middle" class="dtext" font-size="10.5">Grounding Gate</text>
+          <text x="270" y="148" text-anchor="middle" class="dtext-sm" font-size="8.5">pass / fail, max 2 retries</text>
+          <path d="M160,137 L198,137" class="darrow"/>
+          <path d="M270,108 L270,80 L90,80 L90,108" class="darrow-dash"/>
+
+          <rect x="20" y="220" width="140" height="55" rx="6" class="dbox-reg"/>
+          <text x="90" y="242" text-anchor="middle" class="dtext" font-size="10">Hard-stop to human</text>
+          <text x="90" y="258" text-anchor="middle" class="dtext-sm" font-size="8.5">insufficient-evidence flag</text>
+          <path d="M230,163 L120,218" class="darrow-dash"/>
+
+          <rect x="380" y="110" width="140" height="55" rx="6" class="dbox-agent"/>
+          <text x="450" y="132" text-anchor="middle" class="dtext" font-size="10.5">Rating Engine</text>
+          <text x="450" y="148" text-anchor="middle" class="dtext-sm" font-size="8.5">deterministic, versioned</text>
+          <path d="M340,137 L378,137" class="darrow"/>
+
+          <rect x="560" y="110" width="140" height="55" rx="6" class="dbox-gate"/>
+          <text x="630" y="132" text-anchor="middle" class="dtext" font-size="10.5">Referral Gate</text>
+          <text x="630" y="148" text-anchor="middle" class="dtext-sm" font-size="8.5">policy list, not confidence</text>
+          <path d="M520,137 L558,137" class="darrow"/>
+
+          <rect x="380" y="220" width="140" height="55" rx="6" class="dbox-agent"/>
+          <text x="450" y="242" text-anchor="middle" class="dtext" font-size="10.5">Drafting Agent</text>
+          <text x="450" y="258" text-anchor="middle" class="dtext-sm" font-size="8.5">provenance-tagged only</text>
+          <path d="M600,163 L470,218" class="darrow"/>
+
+          <rect x="600" y="220" width="170" height="55" rx="6" class="dbox"/>
+          <text x="685" y="242" text-anchor="middle" class="dtext" font-size="10">Underwriter sign-off</text>
+          <text x="685" y="258" text-anchor="middle" class="dtext-sm" font-size="8.5">Tier 1: Verhoeven · Tier 2: +Larsen</text>
+          <path d="M660,163 L720,218" class="darrow"/>
+          <path d="M520,247 L598,247" class="darrow"/>
+        </svg>
+      </div>
+    </div>
+
+    <h3 class="subsection-heading">Review tier — not whether a human decides, but which human</h3>
+    <p class="body-text">Lumen never auto-issues a policy. The Referral Gate determines review tier, not whether review happens. <strong>Tier 1</strong> — the case falls within a pre-validated rating band with established precedent — is reviewed and signed by the assigned senior underwriter alone. <strong>Tier 2</strong> — a mandatory-referral condition, any decline, any sum assured above a set limit, or any case that hard-stopped at the Grounding Gate — requires co-sign from Dr. Larsen or Anke Voss. The distinction is who must sign, never whether anyone does.</p>
+
+    <h3 class="subsection-heading">EU AI Act obligation mapping</h3>
+    <table class="comp-table">
+      <tr><th>Article</th><th>Obligation</th><th>Lumen mechanism</th></tr>
+      <tr><td>Art. 9 — Risk management</td><td>Continuous risk management across the system lifecycle</td><td>Gated graph is the risk surface itself; each gate is a testable control point</td></tr>
+      <tr><td>Art. 10 — Data governance</td><td>Reference data relevant and error-checked</td><td>Both retrieval corpora are curated and versioned; precedent corpus reviewed for consistency by Nowak's team</td></tr>
+      <tr><td>Art. 12 — Record-keeping</td><td>Logging sufficient for post-hoc reconstruction</td><td>One structured event per agent run — inputs, outputs, confidence, latency — per case</td></tr>
+      <tr><td>Art. 13 — Transparency</td><td>Meaningful explanation to the person affected</td><td>Every drafted sentence is provenance-tagged to a citation or a Rating Engine output</td></tr>
+      <tr><td>Art. 14 — Human oversight</td><td>A natural person can oversee, interpret, and override</td><td>Every case is signed by an underwriter; Tier 2 is structurally non-bypassable</td></tr>
+      <tr><td>Art. 15 — Accuracy, robustness</td><td>Appropriate accuracy for a high-risk system</td><td>Rating calculation is deterministic, not LLM-derived; the LLM only assembles evidence and drafts prose</td></tr>
+    </table>
+    <p class="body-text" style="font-size:12px;color:var(--text3);font-style:italic;">This table is an architectural mapping, prepared for design discussion — it is not a conformity assessment and does not substitute for one.</p>
+  </section>
+
+  <!-- ============ SECTION 8 ============ -->
+  <section class="section" id="s8">
+    <h2 class="section-heading"><span class="section-num">08</span> Simulation</h2>
+    <p class="section-kicker">Case #A-24471 run to a Tier 1 draft. A second case shown hitting the hard-stop instead.</p>
+
+    <div class="sim-box">
+      <div class="sim-scenarios">
+        <button class="scenario-btn active" onclick="selectScenario(0)">#A-24471 — grounded, Tier 1</button>
+        <button class="scenario-btn" onclick="selectScenario(1)">#B-19053 — insufficient evidence</button>
+      </div>
+      <div class="sim-desc" id="sim-desc">Post-treatment oncology history, five years remission, established reinsurer guidance and one internal precedent found.</div>
+      <div class="sim-stages">
+        <div class="sim-stage"><div class="stage-dot" id="dot-0"></div><div class="stage-name">Research</div><div class="stage-owner">2 corpora</div><div class="stage-bar"><div class="stage-bar-fill" id="bar-0"></div></div><div class="stage-timing" id="tim-0">—</div></div>
+        <div class="sim-stage"><div class="stage-dot" id="dot-1"></div><div class="stage-name">Grounding</div><div class="stage-owner">pass/fail</div><div class="stage-bar"><div class="stage-bar-fill" id="bar-1"></div></div><div class="stage-timing" id="tim-1">—</div></div>
+        <div class="sim-stage"><div class="stage-dot" id="dot-2"></div><div class="stage-name">Rating</div><div class="stage-owner">deterministic</div><div class="stage-bar"><div class="stage-bar-fill" id="bar-2"></div></div><div class="stage-timing" id="tim-2">—</div></div>
+        <div class="sim-stage"><div class="stage-dot" id="dot-3"></div><div class="stage-name">Referral</div><div class="stage-owner">policy check</div><div class="stage-bar"><div class="stage-bar-fill" id="bar-3"></div></div><div class="stage-timing" id="tim-3">—</div></div>
+        <div class="sim-stage"><div class="stage-dot" id="dot-4"></div><div class="stage-name">Drafting</div><div class="stage-owner">provenance-tagged</div><div class="stage-bar"><div class="stage-bar-fill" id="bar-4"></div></div><div class="stage-timing" id="tim-4">—</div></div>
+      </div>
+      <div class="sim-controls">
+        <button class="run-btn" id="run-btn" onclick="runSim()">Run simulation</button>
+        <span class="sim-status" id="sim-status-label">idle</span>
+      </div>
+      <div class="sim-output" id="sim-output"><span class="out-comment"># select a scenario and run simulation</span></div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 9 ============ -->
+  <section class="section" id="s9">
+    <h2 class="section-heading"><span class="section-num">09</span> Success Metrics</h2>
+    <div class="stat-grid">
+      <div class="stat-cell"><div class="stat-value teal">100%</div><div class="stat-label">Target: closed cases with a fully reconstructable evidence trail</div></div>
+      <div class="stat-cell"><div class="stat-value amber">–</div><div class="stat-label">Target: reduction in rating variance across underwriters on comparable cases</div></div>
+      <div class="stat-cell"><div class="stat-value purple">–</div><div class="stat-label">Target: reduction in evidence-gathering time per case</div></div>
+      <div class="stat-cell"><div class="stat-value coral">0</div><div class="stat-label">Non-goal: cases auto-issued without underwriter sign-off</div></div>
+    </div>
+    <p class="body-text">The absent metric is deliberate: this is not a project to reduce how many cases reach a human, and stating that explicitly matters as much as any target above it. Success is faster, more consistent evidence for the same number of human decisions — not fewer of them.</p>
+  </section>
+
+  <!-- ============ SECTION 10 ============ -->
+  <section class="section" id="s10">
+    <h2 class="section-heading"><span class="section-num">10</span> Architecture Decision Records</h2>
+
+    <div class="adr-card">
+      <div class="adr-head"><span class="adr-id">ADR-LM-01</span><span class="adr-title">Five single-responsibility gated agents, not one end-to-end agent or a sprawling multi-agent platform</span></div>
+      <div class="adr-row"><strong>Context:</strong> A prior draft of this system considered combining research, precedent lookup, and drafting into fewer, broader agents — or conversely, chaining several existing multi-agent architectures together.</div>
+      <div class="adr-row"><strong>Decision:</strong> Each node has exactly one job and a defined input/output contract, gated by pass/fail checks rather than free-form reasoning about what to do next.</div>
+      <div class="adr-row"><strong>Rejected:</strong> Both a single do-everything agent (impossible to audit which reasoning step produced which output) and a larger composite platform (adds components with no distinct owner or failure mode for this specific process).</div>
+      <div class="adr-row"><strong>Status:</strong> Accepted.</div>
+    </div>
+
+    <div class="adr-card">
+      <div class="adr-head"><span class="adr-id">ADR-LM-02</span><span class="adr-title">Deterministic Rating Engine, never an LLM performing the calculation</span></div>
+      <div class="adr-row"><strong>Context:</strong> Premium loading is a financially material, reproducible calculation over structured risk factors.</div>
+      <div class="adr-row"><strong>Decision:</strong> The Rating Engine is Nowak's team's existing, versioned methodology, implemented as deterministic code. The LLM supplies grounded evidence as input and drafts prose from the output — it never computes or adjusts the figure.</div>
+      <div class="adr-row"><strong>Consequence:</strong> Directly supports Art. 15's accuracy and robustness requirement — a calculation an LLM could silently get wrong is close to indefensible in a conformity review.</div>
+      <div class="adr-row"><strong>Status:</strong> Accepted.</div>
+    </div>
+
+    <div class="adr-card">
+      <div class="adr-head"><span class="adr-id">ADR-LM-03</span><span class="adr-title">Hard-stop to a human after failed grounding, not a lower-confidence draft</span></div>
+      <div class="adr-row"><strong>Context:</strong> A common pattern in comparable research-agent designs delivers the best available output after a retry cap is reached, flagged with a quality warning.</div>
+      <div class="adr-row"><strong>Decision:</strong> After two failed grounding attempts, Lumen halts entirely and routes the case to a human with an insufficient-evidence flag — it produces no draft at all.</div>
+      <div class="adr-row"><strong>Rejected:</strong> Delivering a flagged, lower-confidence draft — rejected because a regulated underwriting decision that stays ungrounded should not exist in draft form; the risk of it being signed off under time pressure outweighs the convenience of having something to start from.</div>
+      <div class="adr-row"><strong>Status:</strong> Accepted.</div>
+    </div>
+
+    <div class="adr-card">
+      <div class="adr-head"><span class="adr-id">ADR-LM-04</span><span class="adr-title">Referral Gate is a deterministic policy list, not a confidence-based decision</span></div>
+      <div class="adr-row"><strong>Context:</strong> Some cases must always reach Dr. Larsen — specific diagnoses, sums assured above a set limit, any decline — regardless of how confident the upstream evidence looks.</div>
+      <div class="adr-row"><strong>Decision:</strong> The mandatory-referral list is a maintained policy table, checked independently of the Grounding Gate's confidence score. A high grounding score can never route around it.</div>
+      <div class="adr-row"><strong>Status:</strong> Accepted.</div>
+    </div>
+
+    <div class="adr-card">
+      <div class="adr-head"><span class="adr-id">ADR-LM-05</span><span class="adr-title">Provenance-tagged drafting only</span></div>
+      <div class="adr-row"><strong>Context:</strong> A drafted decision letter needs to support both the underwriter's review and, later, an Art. 13 explanation to the applicant.</div>
+      <div class="adr-row"><strong>Decision:</strong> Every clause the Drafting Agent produces carries a tag resolving to either a Rating Engine output or a specific Research Agent citation. No sentence exists without one.</div>
+      <div class="adr-row"><strong>Consequence:</strong> Slower drafting than free-generation, and a hard constraint the prompt cannot be allowed to drift away from over time — worth periodic audit.</div>
+      <div class="adr-row"><strong>Status:</strong> Accepted.</div>
+    </div>
+
+    <div class="adr-card">
+      <div class="adr-head"><span class="adr-id">ADR-LM-06</span><span class="adr-title">One structured log table, not a three-layer audit architecture</span></div>
+      <div class="adr-row"><strong>Context:</strong> At 4,100 cases a year, a full forensic-SIEM-plus-analytics-warehouse-plus-dashboard audit stack is disproportionate.</div>
+      <div class="adr-row"><strong>Decision:</strong> One structured event log per agent invocation — case ID, agent name, inputs read, outputs written, confidence, latency — sufficient to reconstruct any case for Art. 12.</div>
+      <div class="adr-row"><strong>Consequence:</strong> Revisit if case volume or the number of downstream consumers of the log grows materially past this scale.</div>
+      <div class="adr-row"><strong>Status:</strong> Accepted.</div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 11 ============ -->
+  <section class="section" id="s11">
+    <h2 class="section-heading"><span class="section-num">11</span> Objection Handling</h2>
+
+    <div class="callout coral">
+      <div class="callout-label">Verhoeven — "will this end up deciding cases instead of me?"</div>
+      <div class="callout-body">The architectural answer is no — every case is drafted, never issued, and a case with insufficient evidence produces nothing rather than a weak draft. Whether that commitment survives contact with case-volume pressure eighteen months from now is a management and incentive question, not one this document can resolve on its own.</div>
+    </div>
+    <div class="callout amber">
+      <div class="callout-label">Larsen — "can I trust a citation an LLM produced?"</div>
+      <div class="callout-body">Only if the citation resolves to a real, retrievable source and the Grounding Gate has verified the cited passage actually supports the claim — not merely that a citation-shaped string is present. That verification step has to be built and tested with real failure cases before Larsen's trust is earned, not assumed from the architecture diagram.</div>
+    </div>
+    <div class="callout purple">
+      <div class="callout-label">Nowak — "is the Rating Engine itself now an 'AI system' under the Act?"</div>
+      <div class="callout-body">Genuinely open. The Act's definition of an AI system is broader than machine learning and may capture rules-based systems depending on how they're built and deployed — this is a real legal question, not a design one, and it needs a definitive answer from Dubois and external counsel before go-live, not an assumption either way in this document.</div>
+    </div>
+    <div class="callout blue">
+      <div class="callout-label">de Boer — "another system with an on-call rotation and a maintenance burden"</div>
+      <div class="callout-body">Fair, and unresolved by architecture alone. Five gated components is smaller than the alternatives considered, but it is not zero — ownership, on-call, and the corpus refresh cadence need an assigned owner before rollout, not after the first incident.</div>
+    </div>
+  </section>
+
+  <!-- ============ SECTION 12 ============ -->
+  <section class="section" id="s12">
+    <h2 class="section-heading"><span class="section-num">12</span> Cost Analysis</h2>
+    <table class="comp-table">
+      <tr><th>Line</th><th>Current state</th><th>With Lumen</th></tr>
+      <tr><td>Evidence gathering per case</td><td>Manual, three disconnected sources, no structured retention</td><td>Automated retrieval with mandatory citation; structured record retained</td></tr>
+      <tr><td>Rating consistency</td><td>Unmeasured across underwriters</td><td>Measurable — same deterministic engine, same evidence standard, per case</td></tr>
+      <tr><td>Case reconstruction (audit request)</td><td>Manual reconstruction from memory and email</td><td>Single structured record per case, per Art. 12</td></tr>
+      <tr><td>Annex III conformity documentation</td><td>Not started</td><td>Obligation mapping in §7 as a working starting point — not a finished conformity file</td></tr>
+    </table>
+    <p class="body-text">A Phase 1 build (§13) on a single line of business is the right way to establish a real cost and time baseline before committing to a full rollout across all four product lines — the same discipline applied in the earlier Vantage and SLUDGE pieces in this portfolio.</p>
+  </section>
+
+  <!-- ============ SECTION 13 ============ -->
+  <section class="section" id="s13">
+    <h2 class="section-heading"><span class="section-num">13</span> Rollout Roadmap</h2>
+    <table class="comp-table">
+      <tr><td>Phase 1</td><td>Research Agent and Grounding Gate only, term life line. No Rating Engine integration, no drafting — proves evidence assembly and citation accuracy before anything touches a rating decision.</td></tr>
+      <tr><td>Phase 2</td><td>Add Rating Engine, Referral Gate, and Drafting Agent for term life. Full case-level record established for Art. 12. FRIA determination completed with Dubois and counsel before this phase begins.</td></tr>
+      <tr><td>Phase 3</td><td>Extend to critical illness and income protection lines. Annex IV technical documentation assembled from Phase 1–2 evidence.</td></tr>
+    </table>
+    <p class="body-text">Phase 1 deliberately excludes any decision-facing output — it exists to validate that the evidence retrieval and grounding discipline actually works on real cases before any rating or drafting capability is added on top of it.</p>
+  </section>
+
+  <!-- ============ SECTION 14 ============ -->
+  <section class="section" id="s14">
+    <h2 class="section-heading"><span class="section-num">14</span> Stakeholder Deck</h2>
+
+    <div class="carousel">
+      <div class="carousel-nav">
+        <button class="slide-btn active" onclick="showSlide(0)">Voss</button>
+        <button class="slide-btn" onclick="showSlide(1)">Verhoeven</button>
+        <button class="slide-btn" onclick="showSlide(2)">Larsen</button>
+        <button class="slide-btn" onclick="showSlide(3)">Nowak</button>
+        <button class="slide-btn" onclick="showSlide(4)">Dubois</button>
+      </div>
+      <div class="slide-panel active">
+        <div class="slide-headline">Every closed case, reconstructable on request</div>
+        <div class="slide-sub">For Anke Voss, Chief Underwriting Officer</div>
+        <p class="body-text">A structured record per case means an audit request is a lookup, not a reconstruction project — and rating consistency becomes something you can measure rather than assert.</p>
+        <div class="slide-note">Phase 1 proves this on one line of business before it's asked to prove anything more.</div>
+      </div>
+      <div class="slide-panel">
+        <div class="slide-headline">The evidence is gathered. The judgement is still yours.</div>
+        <div class="slide-sub">For Lucas Verhoeven, Senior Underwriter</div>
+        <p class="body-text">Every citation is checkable. Every draft is edited and signed by you. A case with weak evidence stops and tells you so — it never hands you a guess dressed as a draft.</p>
+        <div class="slide-note">Not a scorecard on your decisions. A tool that removes the search, not the judgement.</div>
+      </div>
+      <div class="slide-panel">
+        <div class="slide-headline">Only the cases that need you, every time</div>
+        <div class="slide-sub">For Dr. Ingrid Larsen, Chief Medical Officer</div>
+        <p class="body-text">The mandatory-referral list is a policy check, not a confidence score — nothing on that list is ever routed around you, no matter how grounded the evidence looks.</p>
+        <div class="slide-note">Trust in the citations is earned through testing against real failure cases, not assumed from a diagram.</div>
+      </div>
+      <div class="slide-panel">
+        <div class="slide-headline">Your methodology, unchanged — just faster to feed</div>
+        <div class="slide-sub">For Tomas Nowak, Head of Actuarial Pricing</div>
+        <p class="body-text">The Rating Engine is your team's own versioned calculation. Lumen never computes a premium — it only gets the right evidence to your engine faster.</p>
+        <div class="slide-note">The open question of whether the engine itself falls under the Act's AI system definition is yours and Dubois's to resolve, not assumed away here.</div>
+      </div>
+      <div class="slide-panel">
+        <div class="slide-headline">Six obligations, six named mechanisms</div>
+        <div class="slide-sub">For Camille Dubois, DPO &amp; AI Act Compliance Lead</div>
+        <p class="body-text">§7's mapping table is a working start, not a finished conformity file — but every Annex III obligation has a concrete architectural answer to point to, not a promise to build one later.</p>
+        <div class="slide-note">The FRIA determination and legal sign-off happen before Phase 2, not after.</div>
+      </div>
+    </div>
+  </section>
+
+  </div>
+
+  <footer class="doc-footer">Lumen — a fictional design exercise for NoordLeven Life &amp; Health, built as a portfolio artefact. Not legal advice.</footer>
+</div>
+</div>
+
+<script>
+const scenarios = [
+  { desc: 'Post-treatment oncology history, five years remission, established reinsurer guidance and one internal precedent found.',
+    timings: [600, 260, 220, 180, 420],
+    output: [
+      ['comment','# lumen · case run · case: A-24471'],
+      ['comment','# stage: research \u2192 2 sources retrieved, trace: f31a'],
+      ['key','source_1: ','val','"reinsurer guidance \u2014 post-treatment mortality loading, 5yr interval"'],
+      ['key','source_2: ','val','"internal precedent, case #A-19902, comparable presentation"'],
+      ['comment','# stage: grounding_gate \u2192 PASS \u2014 citations verified against source text'],
+      ['comment','# stage: rating_engine \u2192 deterministic calculation, methodology v4.2'],
+      ['key','output: ','val','"standard rate + 0% loading \u2014 within pre-validated band"'],
+      ['comment','# stage: referral_gate \u2192 no mandatory-referral condition matched'],
+      ['key','tier: ','val','"Tier 1 \u2014 Verhoeven sign-off only"'],
+      ['comment','# stage: drafting \u2192 provenance-tagged draft generated'],
+      ['warn','#   awaiting human sign-off \u2014 draft only, not issued'],
+    ]},
+  { desc: 'Rare autoimmune condition, minimal reinsurer guidance available, no internal precedent on file.',
+    timings: [650, 300, 0, 0, 0],
+    output: [
+      ['comment','# lumen · case run · case: B-19053'],
+      ['comment','# stage: research \u2192 1 source retrieved, low coverage, trace: 8c02'],
+      ['comment','# stage: grounding_gate \u2192 FAIL, attempt 1 \u2014 insufficient citation coverage'],
+      ['comment','# stage: research \u2192 re-invoked, targeted query, trace: 8c03'],
+      ['comment','# stage: grounding_gate \u2192 FAIL, attempt 2 \u2014 max retries reached'],
+      ['warn','#   state: HARD-STOP \u2014 routed to human, no draft generated'],
+      ['warn','#   flag: insufficient-evidence \u2014 Dr. Larsen, direct referral'],
+    ]},
+];
+let activeScenario = 0, running = false;
+function selectScenario(i){ if(running) return; activeScenario=i; document.querySelectorAll('.scenario-btn').forEach((b,j)=>b.classList.toggle('active',i===j)); document.getElementById('sim-desc').textContent=scenarios[i].desc; resetSim(); }
+function resetSim(){ for(let i=0;i<5;i++){ document.getElementById('dot-'+i).className='stage-dot'; document.getElementById('bar-'+i).style.width='0'; document.getElementById('tim-'+i).textContent='—'; document.getElementById('tim-'+i).className='stage-timing'; } document.getElementById('sim-output').innerHTML='<span class="out-comment"># select a scenario and run simulation</span>'; document.getElementById('sim-status-label').textContent='idle'; document.getElementById('sim-status-label').className='sim-status'; }
+function fmtTime(ms){ return ms<1000 ? ms+'ms' : (ms/1000).toFixed(1)+'s'; }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+async function runSim(){
+  if(running) return; running=true; document.getElementById('run-btn').disabled=true;
+  const s = scenarios[activeScenario];
+  const statusEl = document.getElementById('sim-status-label');
+  statusEl.textContent='running'; statusEl.className='sim-status running';
+  document.getElementById('sim-output').innerHTML='';
+  for(let i=0;i<5;i++){
+    const blocked = (s.timings[i]||0)===0;
+    document.getElementById('dot-'+i).className='stage-dot running';
+    await sleep(blocked ? 200 : s.timings[i]);
+    document.getElementById('bar-'+i).style.width= blocked ? '30%' : '100%'; await sleep(150);
+    document.getElementById('dot-'+i).className = blocked ? 'stage-dot blocked' : 'stage-dot done';
+    const timEl=document.getElementById('tim-'+i); timEl.textContent= blocked ? 'halted' : fmtTime(s.timings[i]); timEl.className='stage-timing done';
+  }
+  const out=document.getElementById('sim-output'); out.innerHTML='';
+  for(const line of s.output){
+    await sleep(55);
+    const span=document.createElement('span'); span.className='out-line';
+    if(line[0]==='comment'){ span.innerHTML='<span class="out-comment">'+line[1]+'</span>'; }
+    else if(line[0]==='warn'){ span.innerHTML='<span class="out-warn">'+line[1]+'</span>'; }
+    else { let html=''; for(let k=0;k<line.length;k+=2){ if(k+1<line.length) html+='<span class="out-'+line[k]+'">'+line[k+1]+'</span>'; } span.innerHTML=html; }
+    out.appendChild(span); out.scrollTop=out.scrollHeight;
+  }
+  statusEl.textContent='complete'; statusEl.className='sim-status done'; running=false; document.getElementById('run-btn').disabled=false;
+}
+selectScenario(0);
+
+function showSlide(i){ document.querySelectorAll('.slide-btn').forEach((b,j)=>b.classList.toggle('active',i===j)); document.querySelectorAll('.slide-panel').forEach((p,j)=>p.classList.toggle('active',i===j)); }
+
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  links.forEach(a => { const href = a.getAttribute('href').replace('#',''); a.classList.toggle('active', href === current); });
+}, { passive: true });
+</script>
+</body>
+</html>
