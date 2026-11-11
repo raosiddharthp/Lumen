@@ -1,0 +1,16 @@
+{
+  "corpus": "internal_precedent",
+  "version": "1.0",
+  "label": "SYNTHETIC. Fictional precedent log written for the Lumen portfolio demo. Cases are referenced by case number only.",
+  "reviewed_by": "Actuarial Pricing (fictional)",
+  "cases": [
+    {"case_no": "A-19902", "year": 2025, "profile": "Female, age band 40-44, term life, 20-year term", "condition": "Breast cancer, stage I, treatment completed 6 years earlier, clear surveillance", "decision": "Standard rates", "loading_pct": 0, "tier": 1},
+    {"case_no": "A-17540", "year": 2024, "profile": "Female, age band 45-49, term life", "condition": "Breast cancer, stage I, treatment completed 3.5 years earlier, clear surveillance", "decision": "Accepted with loading", "loading_pct": 50, "tier": 1},
+    {"case_no": "A-20118", "year": 2025, "profile": "Female, age band 50-54, term life", "condition": "Breast cancer, stage II, treatment completed 7 years earlier, clear surveillance", "decision": "Accepted with loading after medical officer review", "loading_pct": 50, "tier": 2},
+    {"case_no": "C-14377", "year": 2024, "profile": "Male, age band 50-54, term life", "condition": "Hypertension, average 134/84 on one medication", "decision": "Standard rates", "loading_pct": 0, "tier": 1},
+    {"case_no": "C-18826", "year": 2025, "profile": "Male, age band 55-59, term life", "condition": "Myocardial infarction 4 years earlier, normal stress test", "decision": "Accepted with loading after medical officer review", "loading_pct": 50, "tier": 2},
+    {"case_no": "D-16209", "year": 2024, "profile": "Male, age band 45-49, term life", "condition": "Type 2 diabetes, HbA1c 7.4%, no complications", "decision": "Accepted with loading", "loading_pct": 50, "tier": 1},
+    {"case_no": "O-15031", "year": 2024, "profile": "Male, age band 35-39, term life", "condition": "Offshore rig worker, no medical history", "decision": "Accepted with occupational loading", "loading_pct": 25, "tier": 1},
+    {"case_no": "G-12984", "year": 2025, "profile": "Female, age band 40-44, term life, sum assured EUR 900,000", "condition": "No medical history", "decision": "Standard rates, second-level review due to sum assured", "loading_pct": 0, "tier": 2}
+  ]
+}
