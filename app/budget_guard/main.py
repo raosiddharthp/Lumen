@@ -11,7 +11,7 @@ PROJECT_ID = os.environ["PROJECT_ID"]
 BUDGET_NAME = os.environ.get("BUDGET_NAME", "lumen-cap")
 PAUSED_API = "aiplatform.googleapis.com"
 
-logging.basicConfig(level=logging.INFO)
+logging.getLogger().setLevel(logging.INFO)
 
 
 def _disable_vertex() -> None:
