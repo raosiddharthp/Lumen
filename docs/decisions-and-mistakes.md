@@ -24,6 +24,10 @@ A running log of design decisions and the mistakes that shaped them.
 | D16 | Dependencies are installed from a frozen lock file taken from the environment that works. | Imports made inside libraries at startup are invisible to a static scan. The image must match what runs locally. |
 | D17 | Each agent advertises its public address from `PUBLIC_URL`, and falls back to localhost. | The same code serves the laptop and Cloud Run. A card that says localhost is unreachable. |
 | D18 | Token usage is not visible over A2A, so cost control moves server-side in E8. | Remote agents do not return usage, so the orchestrator reports zero. |
+| D19 | The design doc's countdown is computed in the browser from a fixed target date. | A hard-coded number goes stale the day after it is written. |
+| D20 | A case run is synchronous. The page shows an honest elapsed timer and warms the agents on load, limited to once a minute. | Cloud Run gives CPU only during a request. Warm-up shortens cold starts without paid minimum instances. |
+| D21 | A sign-off writes its event-log record before the case is updated. A failed log write fails the sign-off. | The D7 rule applied to human decisions. |
+| D22 | Passage text is attached to case responses by trusted code at read time and never stored. | One source of truth, and no agent can alter evidence text (D8). |
 
 ## Mistakes
 
@@ -44,3 +48,5 @@ A running log of design decisions and the mistakes that shaped them.
 | M13 | Two service accounts were created without first listing the existing ones. The project already had one per agent. | Removed the duplicates and used the existing four. List before creating. |
 | M14 | The first deploy failed at startup. `google-cloud-firestore` was installed locally but never declared. | Pinned it. Compare declared dependencies with what the code imports. |
 | M15 | The second deploy failed. `sse_starlette`, which `a2a-sdk` imports at startup, was missing. A static import scan could not see it. | Lock file (D16). Build from the environment that works, not from a hand-picked list. |
+| M16 | The design doc gave the AI Act high-risk date as 2 August 2026. That was right when written, and 13 days later Regulation (EU) 2026/1744 moved it to 2 December 2027. A countdown tied to a legal date went stale and then wrong. | Dates corrected with the regulation reference, countdown computed (D19). Check legal dates against current sources before each release. |
+| M17 | A patch script used doubled backslashes in a quoted heredoc, so its anchor never matched. | The assert stopped it before writing. Use real `\n` escapes in patch scripts. |

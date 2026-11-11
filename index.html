@@ -250,9 +250,9 @@ footer.doc-footer { border-top: 1px solid var(--border); padding: 2.5rem; text-a
       <span>Sponsor: Anke Voss, Chief Underwriting Officer</span>
       <span>Track: Complex Risk Underwriting — EU AI Act Readiness</span>
     </div>
-    <div class="doc-disclaimer">NoordLeven Life &amp; Health, Anke Voss, every named stakeholder, and the case reference in §2 are fictional constructs built for this portfolio piece. The EU AI Act's classification of life and health insurance risk assessment and pricing as a high-risk use under Annex III, point 5(c), its 2 August 2026 enforcement date, and the cited Articles (9, 10, 12, 13, 14, 15, 27) describe the real Regulation (EU) 2024/1689. This document is an architecture exercise, not legal advice — the obligation mapping in §7 would need confirmation from qualified counsel before any real implementation.</div>
+    <div class="doc-disclaimer">NoordLeven Life &amp; Health, Anke Voss, every named stakeholder, and the case reference in §2 are fictional constructs built for this portfolio piece. The EU AI Act's classification of life and health insurance risk assessment and pricing as a high-risk use under Annex III, point 5(c), its application date for Annex III high-risk obligations (2 December 2027, moved from 2 August 2026 by Regulation (EU) 2026/1744), and the cited Articles (9, 10, 12, 13, 14, 15, 27) describe the real Regulation (EU) 2024/1689. This document is an architecture exercise, not legal advice — the obligation mapping in §7 would need confirmation from qualified counsel before any real implementation.</div>
     <div class="stat-grid">
-      <div class="stat-cell"><div class="stat-value coral">22</div><div class="stat-label">Days to Annex III high-risk enforcement (2 Aug 2026)</div></div>
+      <div class="stat-cell"><div class="stat-value coral" id="days-to-annex-iii">385</div><div class="stat-label">Days to Annex III high-risk obligations (2 Dec 2027)</div></div>
       <div class="stat-cell"><div class="stat-value amber">4,100</div><div class="stat-label">Complex cases/year, no structured evidence trail</div></div>
       <div class="stat-cell"><div class="stat-value purple">3</div><div class="stat-label">Disconnected sources an underwriter checks manually</div></div>
       <div class="stat-cell"><div class="stat-value teal">5</div><div class="stat-label">Gated agents, each with exactly one job</div></div>
@@ -474,7 +474,7 @@ footer.doc-footer { border-top: 1px solid var(--border); padding: 2.5rem; text-a
     <h2 class="section-heading"><span class="section-num">05</span> Regulatory &amp; Operational Exposure</h2>
     <p class="section-kicker">Not a future compliance project. A live one, with a fixed date.</p>
 
-    <p class="body-text">The EU AI Act names this exact activity. Annex III, point 5(c) classifies AI systems used for risk assessment and pricing in relation to natural persons in life and health insurance as high-risk, and the associated obligations — a documented risk management system (Art. 9), data governance over training and reference data (Art. 10), automatic event logging sufficient for post-hoc reconstruction (Art. 12), a transparency duty toward the people affected (Art. 13), meaningful human oversight (Art. 14), and demonstrable accuracy and robustness (Art. 15) — become enforceable on 2 August 2026. Guidance from the EU AI Office has indicated these obligations extend to systems already in production, not only new deployments, which is why this is a live remediation question for NoordLeven's underwriting process now, whether or not Lumen is built. As an insurer, NoordLeven is also within the category of deployer named under Article 27's fundamental rights impact assessment requirement — a governance action item this document flags but does not resolve; that determination sits with Dubois and external counsel, not with this architecture.</p>
+    <p class="body-text">The EU AI Act names this exact activity. Annex III, point 5(c) classifies AI systems used for risk assessment and pricing in relation to natural persons in life and health insurance as high-risk, and the associated obligations — a documented risk management system (Art. 9), data governance over training and reference data (Art. 10), automatic event logging sufficient for post-hoc reconstruction (Art. 12), a transparency duty toward the people affected (Art. 13), meaningful human oversight (Art. 14), and demonstrable accuracy and robustness (Art. 15) — apply from 2 December 2027, after Regulation (EU) 2026/1744 moved the date from 2 August 2026. Guidance from the EU AI Office has indicated these obligations extend to systems already in production, not only new deployments, which is why this is a live remediation question for NoordLeven's underwriting process now, whether or not Lumen is built. As an insurer, NoordLeven is also within the category of deployer named under Article 27's fundamental rights impact assessment requirement — a governance action item this document flags but does not resolve; that determination sits with Dubois and external counsel, not with this architecture.</p>
 
     <div class="cost-summary">
       <div class="cost-summary-icon" aria-hidden="true">
@@ -484,7 +484,7 @@ footer.doc-footer { border-top: 1px solid var(--border); padding: 2.5rem; text-a
         </svg>
       </div>
       <div class="cost-summary-body">
-        <strong>The exposure has two distinct components, and they should not be conflated.</strong> The compliance component — demonstrating a risk management system, data governance, logging, transparency, oversight, and accuracy for a high-risk system by 2 August 2026 — carries penalty exposure of up to €15M or 3% of worldwide annual turnover for high-risk obligation breaches. The operational component — 4,100 cases a year handled without a repeatable evidence process — is a consistency and quality cost NoordLeven carries regardless of the Act. Lumen addresses both from the same architecture, but they are separately real, and neither should be used to inflate the other in front of a board.
+        <strong>The exposure has two distinct components, and they should not be conflated.</strong> The compliance component — demonstrating a risk management system, data governance, logging, transparency, oversight, and accuracy for a high-risk system by 2 December 2027 — carries penalty exposure of up to €15M or 3% of worldwide annual turnover for high-risk obligation breaches. The operational component — 4,100 cases a year handled without a repeatable evidence process — is a consistency and quality cost NoordLeven carries regardless of the Act. Lumen addresses both from the same architecture, but they are separately real, and neither should be used to inflate the other in front of a board.
       </div>
     </div>
 
@@ -494,7 +494,7 @@ footer.doc-footer { border-top: 1px solid var(--border); padding: 2.5rem; text-a
         Regulation (EU) 2024/1689 (the EU AI Act), Annex III, point 5(c) — life and health insurance risk assessment and pricing, high-risk classification.<br>
         Articles 9, 10, 12, 13, 14, 15 — risk management, data governance, record-keeping, transparency, human oversight, accuracy and robustness obligations for high-risk systems.<br>
         Article 27 — fundamental rights impact assessment for specified deployer categories, including insurers.<br>
-        Enforcement date: 2 August 2026, per Article 6(2)/Annex III phased application. A proposed Digital Omnibus simplification package was under legislative discussion as of mid-2026 and had not been adopted; this document plans against the enacted date.
+        Application date: 2 December 2027 for Annex III high-risk obligations, as amended by Regulation (EU) 2026/1744 (the Digital Omnibus on AI, published 24 July 2026, in force 27 July 2026). The Act's original date was 2 August 2026, and this document was first written against it. Market surveillance enforcement powers still start on 2 August 2026.
       </div>
     </div>
   </section>
@@ -856,6 +856,16 @@ window.addEventListener('scroll', () => {
   sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
   links.forEach(a => { const href = a.getAttribute('href').replace('#',''); a.classList.toggle('active', href === current); });
 }, { passive: true });
+</script>
+<script>
+(function () {
+  var target = Date.UTC(2027, 11, 2);
+  var now = new Date();
+  var today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  var days = Math.max(0, Math.round((target - today) / 86400000));
+  var cell = document.getElementById("days-to-annex-iii");
+  if (cell) cell.textContent = String(days);
+})();
 </script>
 </body>
 </html>
