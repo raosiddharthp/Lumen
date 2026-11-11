@@ -17,14 +17,14 @@ from app.common.grounding import (
 )
 
 
-async def run_gate(case_id: str, claims: list[Claim], stage: str):
+async def run_gate(case_id: str, claims: list[Claim], stage: str, lookup=None):
     runner = InMemoryRunner(agent=root_agent, app_name="gate")
     session = await runner.session_service.create_session(
         app_name="gate", user_id=case_id
     )
     text, tok_in, tok_out = "", 0, 0
     with record(case_id, "grounding_gate", {"stage": stage, "claims": claims}) as run:
-        prompt = build_gate_prompt(claims, passages.get_passage)
+        prompt = build_gate_prompt(claims, lookup or passages.get_passage)
         msg = types.Content(role="user", parts=[types.Part(text=prompt)])
         async for event in runner.run_async(
             user_id=case_id, session_id=session.id, new_message=msg
