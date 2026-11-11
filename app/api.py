@@ -1,12 +1,15 @@
 """Web API for Lumen cases: run a case, read it, record a human sign-off."""
 import asyncio
 import logging
+import pathlib
 import secrets
+import time
 from datetime import datetime
 
 from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from app.common.eventlog import record
@@ -15,6 +18,8 @@ from app.signoff import SignoffError, apply_signoff
 
 log = logging.getLogger("lumen.api")
 CONFLICTS = ("closed", "already_signed")
+WARM_INTERVAL = 60
+WEB_DIR = pathlib.Path(__file__).parent / "web"
 
 
 class NewCase(BaseModel):
@@ -32,7 +37,28 @@ def new_case_id():
     return datetime.now().strftime("A-%m%d-%H%M%S-") + secrets.token_hex(2)
 
 
-def create_app(agents_factory=None, store=None, runner=run_case):
+async def warm_agents():
+    """Call each agent card so scaled-to-zero services wake up. Returns HTTP codes."""
+    import httpx
+
+    from agents.cloud_auth import CALL_TIMEOUT, authed_client
+    from agents.remote_agents import AGENT_CARD_WELL_KNOWN_PATH, agent_urls
+
+    async def ping(name, url):
+        client = authed_client(url) or httpx.AsyncClient(timeout=CALL_TIMEOUT)
+        try:
+            res = await asyncio.wait_for(client.get(url + AGENT_CARD_WELL_KNOWN_PATH), 90)
+            return name, res.status_code
+        except Exception:
+            return name, 0
+        finally:
+            await client.aclose()
+
+    pairs = await asyncio.gather(*(ping(n, u) for n, u in agent_urls().items()))
+    return dict(pairs)
+
+
+def create_app(agents_factory=None, store=None, runner=run_case, warm=None, clock=time.monotonic):
     web = FastAPI(title="Lumen case API")
     state = {"store": store}
 
@@ -93,6 +119,19 @@ def create_app(agents_factory=None, store=None, runner=run_case):
         doc.update(changes)
         return JSONResponse(jsonable_encoder(doc))
 
+    last = {"at": None, "agents": None}
+
+    @web.post("/api/warm")
+    async def warm_up():
+        now = clock()
+        if last["at"] is not None and now - last["at"] < WARM_INTERVAL:
+            return {"cached": True, "agents": last["agents"]}
+        last["at"] = now
+        last["agents"] = await (warm or warm_agents)()
+        return {"cached": False, "agents": last["agents"]}
+
+    if WEB_DIR.is_dir():
+        web.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="web")
     return web
 
 

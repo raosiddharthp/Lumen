@@ -134,3 +134,28 @@ def test_the_memory_store_applies_updates():
     store.save({"case_id": "C-1", "status": "a"})
     store.update("C-1", {"status": "b"})
     assert store.get("C-1")["status"] == "b"
+
+
+async def fake_warm():
+    return {"research": 200, "gate": 200, "drafting": 200}
+
+
+def test_warming_is_limited_to_once_a_minute():
+    now = [0.0]
+    app = api.create_app(
+        agents_factory=lambda: None, store=MemoryStore(), runner=fake_runner,
+        warm=fake_warm, clock=lambda: now[0],
+    )
+    client = TestClient(app)
+    first = client.post("/api/warm").json()
+    assert first == {"cached": False, "agents": {"research": 200, "gate": 200, "drafting": 200}}
+    assert client.post("/api/warm").json()["cached"] is True
+    now[0] = api.WARM_INTERVAL + 1
+    assert client.post("/api/warm").json()["cached"] is False
+
+
+def test_the_page_is_served_from_the_root(setup):
+    client, _ = setup
+    res = client.get("/")
+    assert res.status_code == 200
+    assert "Lumen" in res.text

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen — live case</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-breadcrumb">noordleven / lumen / live-poc</div>
+  <div class="topbar-right">
+    <a class="topbar-link" href="https://raosiddharthp.github.io/Lumen/">Design doc</a>
+    <span class="topbar-tag">fictional client — portfolio artefact</span>
+  </div>
+</div>
+
+<main class="content">
+  <header class="doc-header">
+    <div class="doc-eyebrow">Working proof of concept</div>
+    <h1 class="doc-title">Lumen <em>— live case</em></h1>
+    <div class="doc-disclaimer">NoordLeven Life &amp; Health and every case on this page are fictional. Use synthetic notes only and never enter real personal or medical data. Whatever you submit is stored with the case record. The system retrieves and checks evidence and drafts a summary; a named human always decides. This demo has no sign-in, so names entered at sign-off are not verified.</div>
+    <div class="status-row"><span id="warm" class="chip">agents: checking…</span></div>
+  </header>
+
+  <section class="section">
+    <h2 class="section-heading"><span class="section-num">01</span> Case notes</h2>
+    <p class="section-kicker">Paste underwriting notes or load the sample, then run the case through the gated agents.</p>
+    <textarea id="notes" maxlength="4000" rows="7" spellcheck="false" aria-label="Case notes"></textarea>
+    <div class="form-row">
+      <div class="form-left">
+        <select id="sample" aria-label="Sample case"></select>
+        <button id="load" type="button" class="btn">Load sample</button>
+      </div>
+      <div class="form-right">
+        <span id="count" class="count">0 / 4000</span>
+        <button id="run" type="button" class="btn primary" disabled>Run case</button>
+      </div>
+    </div>
+    <div id="progress" class="progress" hidden></div>
+  </section>
+
+  <section id="result" class="section" hidden></section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
