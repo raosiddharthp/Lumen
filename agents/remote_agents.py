@@ -1,4 +1,5 @@
 import asyncio
+import os
 import sys
 from datetime import datetime
 
@@ -9,6 +10,8 @@ from google.adk.agents.remote_a2a_agent import (
 from google.adk.runners import InMemoryRunner
 from google.genai import types
 
+from agents.cloud_auth import authed_client
+from app.common import config
 from app.common.draft import (
     DraftError,
     allowed_ids_for,
@@ -27,27 +30,34 @@ from app.common.research_result import ResearchError, parse_result
 
 class RemoteTransport:
     def __init__(self, base_url: str, name: str):
-        self.card = base_url.rstrip("/") + AGENT_CARD_WELL_KNOWN_PATH
+        self.base_url = base_url.rstrip("/")
+        self.card = self.base_url + AGENT_CARD_WELL_KNOWN_PATH
         self.name = name
 
     async def ask(self, user_id: str, text: str) -> str:
-        remote = RemoteA2aAgent(
-            name=self.name,
-            agent_card=self.card,
-            description=f"{self.name} reached over A2A",
-        )
-        runner = InMemoryRunner(agent=remote, app_name=self.name)
-        session = await runner.session_service.create_session(
-            app_name=self.name, user_id=user_id
-        )
-        msg = types.Content(role="user", parts=[types.Part(text=text)])
-        final = ""
-        async for event in runner.run_async(
-            user_id=user_id, session_id=session.id, new_message=msg
-        ):
-            if event.is_final_response() and event.content:
-                final = event.content.parts[0].text
-        return final
+        client = authed_client(self.base_url)
+        try:
+            remote = RemoteA2aAgent(
+                name=self.name,
+                agent_card=self.card,
+                description=f"{self.name} reached over A2A",
+                httpx_client=client,
+            )
+            runner = InMemoryRunner(agent=remote, app_name=self.name)
+            session = await runner.session_service.create_session(
+                app_name=self.name, user_id=user_id
+            )
+            msg = types.Content(role="user", parts=[types.Part(text=text)])
+            final = ""
+            async for event in runner.run_async(
+                user_id=user_id, session_id=session.id, new_message=msg
+            ):
+                if event.is_final_response() and event.content:
+                    final = event.content.parts[0].text
+            return final
+        finally:
+            if client is not None:
+                await client.aclose()
 
 
 class A2AAgents:
@@ -113,11 +123,30 @@ class A2AAgents:
         return claims, (0, 0)
 
 
+LOCAL_PORTS = {"research": 8011, "gate": 8012, "drafting": 8013}
+
+
+def cloud_urls(project_number, region):
+    return {
+        name: f"https://lumen-{name}-{project_number}.{region}.run.app"
+        for name in LOCAL_PORTS
+    }
+
+
+def agent_urls(env=None, host="http://localhost"):
+    """Where the three agents are: localhost by default, Cloud Run if LUMEN_AGENTS=cloud."""
+    env = os.environ if env is None else env
+    if env.get("LUMEN_AGENTS") == "cloud":
+        return cloud_urls(config.PROJECT_NUMBER, config.AGENT_REGION)
+    return {name: f"{host}:{port}" for name, port in LOCAL_PORTS.items()}
+
+
 def default_agents(host: str = "http://localhost") -> A2AAgents:
+    urls = agent_urls(host=host)
     return A2AAgents(
-        RemoteTransport(f"{host}:8011", "research_remote"),
-        RemoteTransport(f"{host}:8012", "gate_remote"),
-        RemoteTransport(f"{host}:8013", "drafting_remote"),
+        RemoteTransport(urls["research"], "research_remote"),
+        RemoteTransport(urls["gate"], "gate_remote"),
+        RemoteTransport(urls["drafting"], "drafting_remote"),
     )
 
 

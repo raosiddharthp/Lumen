@@ -9,3 +9,6 @@ EMBED_DIMS = int(os.environ.get("EMBED_DIMS", "768"))
 LLM_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-flash-lite")
 LLM_LOCATION = os.environ.get("GEMINI_LOCATION", "global")
 GATE_MODEL = os.environ.get("GATE_MODEL", LLM_MODEL)
+
+PROJECT_NUMBER = os.environ.get("PROJECT_NUMBER", "807627578504")
+AGENT_REGION = os.environ.get("AGENT_REGION", "us-east1")
