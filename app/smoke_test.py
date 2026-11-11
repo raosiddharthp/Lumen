@@ -4,19 +4,23 @@ from google import genai
 from google.genai import types
 
 PROJECT_ID = "lumen-poc-srao26"
-LOCATION = "us-east1"
-
-client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
+DEFAULT_LOCATION = "us-east1"
 
 
-def list_models() -> None:
+def make_client(location: str) -> genai.Client:
+    return genai.Client(vertexai=True, project=PROJECT_ID, location=location)
+
+
+def list_models(location: str) -> None:
+    client = make_client(location)
     for m in client.models.list(config={"query_base": True}):
         name = m.name or ""
         if "gemini" in name or "embedding" in name:
             print(name)
 
 
-def call(model: str) -> None:
+def call(model: str, location: str) -> None:
+    client = make_client(location)
     resp = client.models.generate_content(
         model=model,
         contents="Reply with the single word: ready",
@@ -29,7 +33,8 @@ def call(model: str) -> None:
     print("thinking_tokens:", getattr(usage, "thoughts_token_count", None))
 
 
-def embed(model: str) -> None:
+def embed(model: str, location: str) -> None:
+    client = make_client(location)
     resp = client.models.embed_content(
         model=model, contents=["post-treatment mortality loading"]
     )
@@ -38,9 +43,11 @@ def embed(model: str) -> None:
 
 if __name__ == "__main__":
     action = sys.argv[1]
+    model = sys.argv[2] if len(sys.argv) > 2 else ""
+    loc = sys.argv[3] if len(sys.argv) > 3 else DEFAULT_LOCATION
     if action == "list":
-        list_models()
+        list_models(loc)
     elif action == "call":
-        call(sys.argv[2])
+        call(model, loc)
     elif action == "embed":
-        embed(sys.argv[2])
+        embed(model, loc)
