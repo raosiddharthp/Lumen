@@ -13,6 +13,9 @@ class MemoryStore:
     def get(self, case_id):
         return self.cases.get(case_id)
 
+    def update(self, case_id, changes):
+        self.cases[case_id].update(changes)
+
 
 class FirestoreStore:
     def __init__(self):
@@ -26,3 +29,6 @@ class FirestoreStore:
     def get(self, case_id):
         snap = self._db.collection(COLLECTION).document(case_id).get()
         return snap.to_dict() if snap.exists else None
+
+    def update(self, case_id, changes):
+        self._db.collection(COLLECTION).document(case_id).update(changes)
