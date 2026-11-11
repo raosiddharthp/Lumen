@@ -159,3 +159,15 @@ def test_the_page_is_served_from_the_root(setup):
     res = client.get("/")
     assert res.status_code == 200
     assert "Lumen" in res.text
+
+
+def test_case_responses_carry_the_passages_they_cite(setup):
+    client, store = setup
+    doc = make_doc("C-9")
+    doc["notes"] = "Some notes about the applicant."
+    doc["draft"] = [{"id": "s1", "text": "x", "cites": ["CASE", "RG-ONC-002"]}]
+    store.save(doc)
+    body = client.get("/api/cases/C-9").json()
+    assert body["passages"]["CASE"]["text"] == "Some notes about the applicant."
+    assert body["passages"]["RG-ONC-002"]["title"] == "Breast cancer, stage I"
+    assert "passages" not in store.get("C-9")

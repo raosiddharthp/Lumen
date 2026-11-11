@@ -13,6 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from app.common.eventlog import record
+from app.common.hydrate import hydrate
 from app.orchestrator import run_case
 from app.signoff import SignoffError, apply_signoff
 
@@ -35,6 +36,11 @@ class Signoff(BaseModel):
 
 def new_case_id():
     return datetime.now().strftime("A-%m%d-%H%M%S-") + secrets.token_hex(2)
+
+
+def reply(doc):
+    """A case as JSON, with the text of every passage it cites attached."""
+    return JSONResponse(jsonable_encoder(hydrate(doc)))
 
 
 async def warm_agents():
@@ -88,14 +94,14 @@ def create_app(agents_factory=None, store=None, runner=run_case, warm=None, cloc
         except Exception:
             log.exception("case run failed")
             return JSONResponse({"error": "run_failed", "case_id": case_id}, status_code=502)
-        return JSONResponse(jsonable_encoder(doc))
+        return reply(doc)
 
     @web.get("/api/cases/{case_id}")
     async def read_case(case_id: str):
         doc = await asyncio.to_thread(get_store().get, case_id)
         if doc is None:
             raise HTTPException(status_code=404, detail="no such case")
-        return JSONResponse(jsonable_encoder(doc))
+        return reply(doc)
 
     @web.post("/api/cases/{case_id}/signoff")
     async def sign(case_id: str, body: Signoff):
@@ -117,7 +123,7 @@ def create_app(agents_factory=None, store=None, runner=run_case, warm=None, cloc
             log.exception("sign-off failed")
             return JSONResponse({"error": "signoff_failed"}, status_code=502)
         doc.update(changes)
-        return JSONResponse(jsonable_encoder(doc))
+        return reply(doc)
 
     last = {"at": None, "agents": None}
 
