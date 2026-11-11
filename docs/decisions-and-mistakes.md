@@ -18,6 +18,12 @@ A running log of design decisions and the mistakes that shaped them.
 | D10 | The Grounding Gate has no tools. Case notes and the rating output are supplied as pseudo-passages `CASE` and `RATING`. A draft is a list of sentences, each with its own cites. | The Gate can check every sentence, including numbers, against trusted text. |
 | D11 | The Gate model is a separate setting (`GATE_MODEL`). | The judge can be upgraded without code changes. |
 | D12 | Research citations are never trusted raw. The Gate's applicability check decides which citations survive. | The agent cites everything it retrieves. |
+| D13 | One image serves all agent services. An `APP` environment variable picks which agent each service runs. | Layers are stored once, which keeps the registry under its 0.5 GB free allowance. |
+| D14 | The agent services are closed to the public. Only the orchestrator identity may call them, using a Google-signed ID token. | A stranger who finds an agent URL gets a 403 instead of spending Gemini tokens. IAM-denied requests are not billed. |
+| D15 | One identity per agent with minimum roles. Only research and the orchestrator can read Firestore. | A compromised gate or drafting service cannot read stored cases. |
+| D16 | Dependencies are installed from a frozen lock file taken from the environment that works. | Imports made inside libraries at startup are invisible to a static scan. The image must match what runs locally. |
+| D17 | Each agent advertises its public address from `PUBLIC_URL`, and falls back to localhost. | The same code serves the laptop and Cloud Run. A card that says localhost is unreachable. |
+| D18 | Token usage is not visible over A2A, so cost control moves server-side in E8. | Remote agents do not return usage, so the orchestrator reports zero. |
 
 ## Mistakes
 
@@ -35,3 +41,6 @@ A running log of design decisions and the mistakes that shaped them.
 | M10 | The Gate prompt demanded exact numbers, so it rejected the best precedent (6 years against 6.7). | The tolerance is now stated inside the claim. |
 | M11 | The Research agent cited all six passages it retrieved, including a stage II rule for a stage I case. | Added the applicability check (D12). |
 | M12 | Private helpers are imported across modules (`passages.py`, `draft.py`). | Tidy in E7. |
+| M13 | Two service accounts were created without first listing the existing ones. The project already had one per agent. | Removed the duplicates and used the existing four. List before creating. |
+| M14 | The first deploy failed at startup. `google-cloud-firestore` was installed locally but never declared. | Pinned it. Compare declared dependencies with what the code imports. |
+| M15 | The second deploy failed. `sse_starlette`, which `a2a-sdk` imports at startup, was missing. A static import scan could not see it. | Lock file (D16). Build from the environment that works, not from a hand-picked list. |
