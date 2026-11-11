@@ -25,16 +25,27 @@ class Verdict:
     reason: str
 
 
+SCOPE_TEST = "This case falls within the scope of this passage."
+PRECEDENT_TEST = (
+    "This case is comparable to the case in this passage: the condition and "
+    "its stage or severity match, and any time since treatment is within one "
+    "year of the passage's figure."
+)
+
+
 def applicability_claims(factors: dict, citation_ids: list[str]) -> list[Claim]:
     summary = ", ".join(f"{k}={v}" for k, v in factors.items())
-    return [
-        Claim(
-            claim_id=f"applies-{cid}",
-            text=f"This case ({summary}) falls within the scope of this passage.",
-            cites=(cid,),
+    claims = []
+    for cid in citation_ids:
+        test = PRECEDENT_TEST if cid.startswith("PR-") else SCOPE_TEST
+        claims.append(
+            Claim(
+                claim_id=f"applies-{cid}",
+                text=f"Case facts: {summary}. {test}",
+                cites=(cid,),
+            )
         )
-        for cid in citation_ids
-    ]
+    return claims
 
 
 def build_gate_prompt(claims: list[Claim], lookup) -> str:

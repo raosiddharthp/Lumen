@@ -120,3 +120,9 @@ def test_applicability_claims_one_per_citation():
     assert [c.cites for c in claims] == [("RG-ONC-002",), ("PR-A-19902",)]
     assert "breast_cancer_stage1" in claims[0].text
     assert len({c.claim_id for c in claims}) == 2
+
+
+def test_precedent_claims_state_a_tolerance_and_guidance_claims_do_not():
+    claims = applicability_claims({"condition": "x"}, ["RG-ONC-002", "PR-A-19902"])
+    assert "within one year" not in claims[0].text
+    assert "within one year" in claims[1].text
