@@ -28,6 +28,10 @@ A running log of design decisions and the mistakes that shaped them.
 | D20 | A case run is synchronous. The page shows an honest elapsed timer and warms the agents on load, limited to once a minute. | Cloud Run gives CPU only during a request. Warm-up shortens cold starts without paid minimum instances. |
 | D21 | A sign-off writes its event-log record before the case is updated. A failed log write fails the sign-off. | The D7 rule applied to human decisions. |
 | D22 | Passage text is attached to case responses by trusted code at read time and never stored. | One source of truth, and no agent can alter evidence text (D8). |
+| D23 | The Case API and UI run as one Cloud Run service, `lumen-app`, as the `orchestrator` identity, closed to the public with 0 to 2 instances. | There is no per-visitor spend cap yet. The service stays private until the cost guard exists (Epic 8). |
+| D24 | The app uses the same image as the three agents. The `APP` variable picks which process starts. | One image to build and store, and one lock file to keep current. |
+| D25 | Private testing goes through `gcloud run services proxy`, a local tunnel that adds the tester's credentials. | The service can be tried in a browser without being made public. |
+| D26 | Each build gets its own image tag, and a tag is never reused. Image versions that no service uses are deleted by hand. | A moved tag leaves an orphaned version. An automatic cleanup rule could delete an image that a running revision still needs. |
 
 ## Mistakes
 
@@ -50,3 +54,4 @@ A running log of design decisions and the mistakes that shaped them.
 | M15 | The second deploy failed. `sse_starlette`, which `a2a-sdk` imports at startup, was missing. A static import scan could not see it. | Lock file (D16). Build from the environment that works, not from a hand-picked list. |
 | M16 | The design doc gave the AI Act high-risk date as 2 August 2026. That was right when written, and 13 days later Regulation (EU) 2026/1744 moved it to 2 December 2027. A countdown tied to a legal date went stale and then wrong. | Dates corrected with the regulation reference, countdown computed (D19). Check legal dates against current sources before each release. |
 | M17 | A patch script used doubled backslashes in a quoted heredoc, so its anchor never matched. | The assert stopped it before writing. Use real `\n` escapes in patch scripts. |
+| M18 | A build-and-deploy block with a fixed tag was run twice, so the `v5` tag moved and left an unused 92 MB image version. The legacy builder also rebuilds the dependency layer on every build, so each build adds about 55 MB to a 0.5 GB free tier. | The orphan is deleted, and each build now gets its own tag (D26). Registry size is checked before each new build. |
