@@ -45,6 +45,9 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); font
 .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 2.5rem; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(250,250,248,0.95); backdrop-filter: blur(8px); z-index: 100; }
 .topbar-breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--text3); }
 .topbar-right { display: flex; align-items: center; gap: 16px; }
+.topbar-launch { font-family: var(--mono); font-size: 11px; padding: 5px 12px; background: var(--text); color: var(--bg); border-radius: var(--r); text-decoration: none; }
+.topbar-launch:hover { background: var(--teal); }
+.topbar-launch:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 .topbar-tag { font-family: var(--mono); font-size: 10px; padding: 3px 8px; background: var(--bg3); border-radius: 99px; color: var(--text2); }
 
 .content { padding: 3rem 2.5rem 5rem; max-width: 860px; }
@@ -237,7 +240,7 @@ footer.doc-footer { border-top: 1px solid var(--border); padding: 2.5rem; text-a
 <div class="main">
   <div class="topbar">
     <div class="topbar-breadcrumb">noordleven / lumen / design-doc</div>
-    <div class="topbar-right"><span class="topbar-tag">fictional client — portfolio artefact</span></div>
+    <div class="topbar-right"><span class="topbar-tag">fictional client — portfolio artefact</span><a class="topbar-launch" href="https://lumen-app-807627578504.us-east1.run.app" target="_blank" rel="noopener">Launch app →</a></div>
   </div>
 
   <div class="content">
