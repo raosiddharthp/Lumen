@@ -43,10 +43,15 @@ class MemoryCounters:
 
 class FirestoreCounters:
     def __init__(self):
-        from google.cloud import firestore
+        self._client = None
 
-        self._firestore = firestore
-        self._db = firestore.Client(project=PROJECT_ID)
+    @property
+    def _db(self):
+        if self._client is None:
+            from google.cloud import firestore
+
+            self._client = firestore.Client(project=PROJECT_ID)
+        return self._client
 
     def _ref(self, key):
         return self._db.collection(COLLECTION).document(key)
@@ -59,7 +64,7 @@ class FirestoreCounters:
         ]
 
     def reserve(self, checks):
-        firestore = self._firestore
+        from google.cloud import firestore
 
         @firestore.transactional
         def run(transaction):

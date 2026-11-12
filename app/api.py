@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field
 
 from app.common.eventlog import record
 from app.common.hydrate import hydrate
+from app.guard import FirestoreCounters, Guard
 from app.orchestrator import run_case
 from app.signoff import SignoffError, apply_signoff
 
@@ -174,4 +175,4 @@ def create_app(agents_factory=None, store=None, runner=run_case, warm=None, cloc
     return web
 
 
-web = create_app()
+web = create_app(guard=Guard(FirestoreCounters()))

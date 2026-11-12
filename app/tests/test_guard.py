@@ -94,3 +94,9 @@ def test_guard_fails_closed_when_the_counters_break():
     d = guard.status("a")
     assert not d.ok and d.reason == "guard_error"
     assert d.message
+
+
+def test_firestore_counters_do_not_connect_until_used():
+    from app.guard import FirestoreCounters
+
+    assert FirestoreCounters()._client is None
