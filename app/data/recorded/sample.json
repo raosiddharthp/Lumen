@@ -1,0 +1,176 @@
+{
+  "case_id": "L-1112-054354",
+  "created_at": "2026-11-12T00:14:18.053412+00:00",
+  "draft": [
+    {
+      "cites": [
+        "CASE"
+      ],
+      "id": "s1",
+      "reason": "The applicant's age, occupation, and life cover amount match the information provided in the case details.",
+      "text": "The applicant is a 44-year-old accountant applying for EUR 500,000 in life cover.",
+      "verdict": "supported"
+    },
+    {
+      "cites": [
+        "CASE"
+      ],
+      "id": "s2",
+      "reason": "The medical history and treatment timeline align exactly with the provided case passage.",
+      "text": "Medical history includes stage I breast cancer treated with a lumpectomy and radiotherapy, with treatment completed in March 2020.",
+      "verdict": "supported"
+    },
+    {
+      "cites": [
+        "CASE"
+      ],
+      "id": "s3",
+      "reason": "The passage confirms the applicant has had clear annual surveillance mammograms and no recurrence.",
+      "text": "The applicant has recorded clear annual surveillance mammograms since treatment and reports no recurrence.",
+      "verdict": "supported"
+    },
+    {
+      "cites": [
+        "RATING"
+      ],
+      "id": "s4",
+      "reason": "The passage from the rating engine explicitly lists the status as rated with a 0% loading and rule ONC-S1-5Y.",
+      "text": "The rating engine applied rule ONC-S1-5Y, resulting in a status of rated with a loading of 0%.",
+      "verdict": "supported"
+    },
+    {
+      "cites": [
+        "RG-ONC-002"
+      ],
+      "id": "s5",
+      "reason": "The passage RG-ONC-002 confirms the specified loading criteria for post-treatment breast cancer cases.",
+      "text": "According to RG-ONC-002, a loading of 0% applies to cases with 5 years or more since treatment with no recurrence and clear surveillance.",
+      "verdict": "supported"
+    },
+    {
+      "cites": [
+        "PR-A-19902"
+      ],
+      "id": "s6",
+      "reason": "The precedent clearly documents the standard rates and 0% loading for a 6-year post-treatment stage I breast cancer case.",
+      "text": "Precedent PR-A-19902 shows a decision of standard rates and a loading of 0% for a stage I breast cancer case with clear surveillance 6 years post-treatment.",
+      "verdict": "supported"
+    }
+  ],
+  "evidence": {
+    "dropped": [
+      "RG-ONC-003",
+      "PR-A-17540",
+      "PR-A-20118"
+    ],
+    "verified": [
+      "RG-ONC-002",
+      "RG-ONC-004",
+      "PR-A-19902"
+    ]
+  },
+  "factors": {
+    "condition": "breast_cancer_stage1",
+    "diastolic": 80,
+    "medications": 0,
+    "recurrence": false,
+    "sum_assured": 500000.0,
+    "surveillance_clear": true,
+    "systolic": 126,
+    "years_since_treatment": 6.7
+  },
+  "grounding": "passed",
+  "notes": "Applicant: 44-year-old accountant requesting EUR 500,000 life cover. Medical history: breast cancer, stage I, treated with lumpectomy and radiotherapy; treatment completed in March 2020. Annual surveillance mammograms since then have all been clear and there has been no recurrence. Blood pressure 126/80, no medication. No other conditions.",
+  "passages": {
+    "CASE": {
+      "kind": "case",
+      "text": "Applicant: 44-year-old accountant requesting EUR 500,000 life cover. Medical history: breast cancer, stage I, treated with lumpectomy and radiotherapy; treatment completed in March 2020. Annual surveillance mammograms since then have all been clear and there has been no recurrence. Blood pressure 126/80, no medication. No other conditions.",
+      "title": "Case notes"
+    },
+    "PR-A-17540": {
+      "kind": "precedent",
+      "text": "Breast cancer, stage I, treatment completed 3.5 years earlier, clear surveillance. Female, age band 45-49, term life. Decision: Accepted with loading. Loading: 50%. Review tier: 1.",
+      "title": "Precedent A-17540"
+    },
+    "PR-A-19902": {
+      "kind": "precedent",
+      "text": "Breast cancer, stage I, treatment completed 6 years earlier, clear surveillance. Female, age band 40-44, term life, 20-year term. Decision: Standard rates. Loading: 0%. Review tier: 1.",
+      "title": "Precedent A-19902"
+    },
+    "PR-A-20118": {
+      "kind": "precedent",
+      "text": "Breast cancer, stage II, treatment completed 7 years earlier, clear surveillance. Female, age band 50-54, term life. Decision: Accepted with loading after medical officer review. Loading: 50%. Review tier: 2.",
+      "title": "Precedent A-20118"
+    },
+    "RATING": {
+      "kind": "rating",
+      "text": "Rating engine v4.2: status rated; loading 0%; rules ONC-S1-5Y.",
+      "title": "Rating engine output"
+    },
+    "RG-ONC-002": {
+      "kind": "guidance",
+      "text": "For stage I breast cancer, time since completion of treatment sets the rating. Under 2 years: postpone. 2 to under 3 years: loading of 100%. 3 to under 5 years: loading of 50%. 5 years or more with no recurrence and clear surveillance: standard rates, loading of 0%.",
+      "title": "Breast cancer, stage I"
+    },
+    "RG-ONC-003": {
+      "kind": "guidance",
+      "text": "Stage II or higher is outside the pre-validated bands. Cases at 7 or more years from treatment with clear surveillance may be considered at a loading of 25% to 75%, but every such case requires medical officer review before a rating is confirmed.",
+      "title": "Breast cancer, stage II and above"
+    },
+    "RG-ONC-004": {
+      "kind": "guidance",
+      "text": "A rating under section 4 requires the pathology summary, the treating oncologist report confirming stage and completion date, and the most recent surveillance result. Any recurrence, metastasis or new primary at any time moves the case to decline or medical officer referral.",
+      "title": "Evidence required for a cancer rating"
+    }
+  },
+  "rating": {
+    "guidance_refs": [
+      "RG-ONC-002"
+    ],
+    "loading_pct": 0,
+    "methodology_version": "v4.2",
+    "notes": [],
+    "rule_ids": [
+      "ONC-S1-5Y"
+    ],
+    "status": "rated"
+  },
+  "recorded": {
+    "at": "2026-11-12",
+    "source_case": "L-1112-054354"
+  },
+  "referral": {
+    "guidance_refs": [],
+    "policy_version": "p1.0",
+    "reasons": [],
+    "requires_human_signoff": true,
+    "signers": [
+      "senior_underwriter"
+    ],
+    "tier": 1
+  },
+  "rejected_draft": null,
+  "stages": {
+    "applicability": {
+      "attempts": 1,
+      "failure": null
+    },
+    "draft": {
+      "attempts": 1,
+      "failure": null
+    },
+    "research": {
+      "attempts": 1,
+      "failure": null
+    }
+  },
+  "status": "awaiting_signoff",
+  "tokens": {
+    "in": 5144,
+    "out": 1306
+  },
+  "versions": {
+    "methodology": "v4.2",
+    "policy": "p1.0"
+  }
+}

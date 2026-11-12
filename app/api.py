@@ -16,6 +16,7 @@ from app.common.eventlog import record
 from app.common.hydrate import hydrate
 from app.guard import FirestoreCounters, Guard
 from app.orchestrator import run_case
+from app.recorded import load as default_recorded
 from app.signoff import SignoffError, apply_signoff
 
 log = logging.getLogger("lumen.api")
@@ -73,7 +74,7 @@ async def warm_agents():
     return dict(pairs)
 
 
-def create_app(agents_factory=None, store=None, runner=run_case, warm=None, clock=time.monotonic, guard=None):
+def create_app(agents_factory=None, store=None, runner=run_case, warm=None, clock=time.monotonic, guard=None, recorded=None):
     web = FastAPI(title="Lumen case API")
     state = {"store": store}
 
@@ -158,6 +159,13 @@ def create_app(agents_factory=None, store=None, runner=run_case, warm=None, cloc
             return JSONResponse({"error": "signoff_failed"}, status_code=502)
         doc.update(changes)
         return reply(doc)
+
+    @web.get("/api/recorded")
+    async def recorded_run():
+        snapshot = await asyncio.to_thread(recorded or default_recorded)
+        if snapshot is None:
+            raise HTTPException(status_code=404, detail="no recorded run")
+        return JSONResponse(snapshot)
 
     last = {"at": None, "agents": None}
 
