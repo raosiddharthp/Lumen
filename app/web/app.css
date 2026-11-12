@@ -125,3 +125,5 @@ details.evidence.dropped summary { color: var(--text3); }
 @media (max-width: 640px) {
   .field-row { grid-template-columns: 1fr; }
 }
+
+.status-row { display: flex; flex-wrap: wrap; gap: 8px; }

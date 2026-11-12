@@ -32,6 +32,8 @@
   const progress = $("progress");
   const result = $("result");
   const warmChip = $("warm");
+  const leftChip = $("left");
+  const recordedBtn = $("recorded");
   let busy = false;
   let timer = null;
 
@@ -73,6 +75,44 @@
         else setChip("agents: waking up", "amber");
       })
       .catch(() => setChip("agents: unreachable", "coral"));
+  }
+
+  function loadLimits() {
+    fetch("/api/limits")
+      .then((r) => r.json())
+      .then((data) => {
+        leftChip.title = data.message || "";
+        if (data.left === null || data.left === undefined) {
+          leftChip.textContent = "live runs: no limit set";
+          leftChip.className = "chip";
+        } else if (!data.live) {
+          leftChip.textContent = "live runs: none left";
+          leftChip.className = "chip coral";
+        } else {
+          leftChip.textContent = "live runs left: " + data.left;
+          leftChip.className = "chip " + (data.left > 1 ? "teal" : "amber");
+        }
+      })
+      .catch(() => {
+        leftChip.textContent = "live runs: unknown";
+        leftChip.className = "chip amber";
+      });
+  }
+
+  function recordedBanner(info, why) {
+    const text = (why ? why + " " : "") +
+      "This is a recorded run from " + info.at + ", produced by the same pipeline as a live run. Sign-off is switched off on it.";
+    return callout("amber", "Recorded run", text);
+  }
+
+  function showRecorded(why) {
+    return fetch("/api/recorded")
+      .then((res) => {
+        if (!res.ok) throw new Error("no recording");
+        return res.json();
+      })
+      .then((data) => renderCase(data, true, why))
+      .catch(() => showError((why ? why + " " : "") + "The recorded run could not be loaded."));
   }
 
   function showProgress(seconds) {
@@ -363,6 +403,10 @@
   function renderSignoff(doc) {
     const block = el("div", "block");
     block.appendChild(heading("06", "Human sign-off"));
+    if (doc.recorded) {
+      block.appendChild(callout("amber", "Sign-off is off", "This is a recorded run, so nothing here can be signed. Run a live case to try the sign-off."));
+      return block;
+    }
     const signed = doc.signoffs || [];
     const signers = (doc.referral && doc.referral.signers) || [];
     if (signed.length) block.appendChild(signoffLog(signed));
@@ -377,10 +421,11 @@
     return block;
   }
 
-  function renderCase(doc, scroll) {
+  function renderCase(doc, scroll, why) {
     const passages = doc.passages || {};
     result.textContent = "";
     result.hidden = false;
+    if (doc.recorded) result.appendChild(recordedBanner(doc.recorded, why));
     result.appendChild(renderSummary(doc));
     result.appendChild(renderRating(doc));
     result.appendChild(renderDraft(doc, passages));
@@ -405,15 +450,26 @@
     })
       .then((res) => res.json().then((data) => ({ res, data })))
       .then(({ res, data }) => {
-        if (!res.ok) throw new Error(describeError(res.status, data));
-        renderCase(data, true);
+        if (res.ok) {
+          renderCase(data, true);
+          return;
+        }
+        if (res.status === 429) return showRecorded(data.message || "Live runs are not available right now.");
+        if (res.status === 502) return showRecorded("The live run failed on the server.");
+        throw new Error(describeError(res.status, data));
       })
-      .catch((err) => showError(err.message || "The request failed. Please try again."))
+      .catch((err) => {
+        if (err instanceof TypeError || err.name === "SyntaxError") {
+          return showRecorded("The live service could not be reached.");
+        }
+        showError(err.message || "The request failed. Please try again.");
+      })
       .finally(() => {
         clearInterval(timer);
         progress.hidden = true;
         busy = false;
         refresh();
+        loadLimits();
       });
   }
 
@@ -423,7 +479,9 @@
   });
   notes.addEventListener("input", refresh);
   runBtn.addEventListener("click", runCase);
+  recordedBtn.addEventListener("click", () => showRecorded(""));
 
   refresh();
   warmUp();
+  loadLimits();
 })();

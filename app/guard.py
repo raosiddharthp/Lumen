@@ -9,10 +9,10 @@ from .common.config import PROJECT_ID
 COLLECTION = "guard"
 
 MESSAGES = {
-    "visitor_day": "You have used your live runs for today. You can view the recorded run, or try again tomorrow.",
-    "global_day": "Today's live runs are used up for everyone. You can view the recorded run, or try again tomorrow.",
-    "global_month": "This month's live runs are used up. You can view the recorded run.",
-    "guard_error": "Live runs are unavailable right now. You can view the recorded run.",
+    "visitor_day": "You have used your live runs for today. Try again tomorrow.",
+    "global_day": "Today's live runs are used up for everyone. Try again tomorrow.",
+    "global_month": "This month's live runs are used up.",
+    "guard_error": "Live runs are unavailable right now.",
 }
 
 
