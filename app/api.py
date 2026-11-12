@@ -6,7 +6,7 @@ import secrets
 import time
 from datetime import datetime
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -35,12 +35,20 @@ class Signoff(BaseModel):
 
 
 def new_case_id():
-    return datetime.now().strftime("A-%m%d-%H%M%S-") + secrets.token_hex(2)
+    return datetime.now().strftime("A-%m%d-%H%M%S-") + secrets.token_hex(8)
 
 
 def reply(doc):
     """A case as JSON, with the text of every passage it cites attached."""
     return JSONResponse(jsonable_encoder(hydrate(doc)))
+
+
+def caller_address(request):
+    """The caller's address: the last X-Forwarded-For entry, which Cloud Run adds itself."""
+    parts = [p.strip() for p in request.headers.get("x-forwarded-for", "").split(",") if p.strip()]
+    if parts:
+        return parts[-1]
+    return request.client.host if request.client else "unknown"
 
 
 async def warm_agents():
@@ -64,7 +72,7 @@ async def warm_agents():
     return dict(pairs)
 
 
-def create_app(agents_factory=None, store=None, runner=run_case, warm=None, clock=time.monotonic):
+def create_app(agents_factory=None, store=None, runner=run_case, warm=None, clock=time.monotonic, guard=None):
     web = FastAPI(title="Lumen case API")
     state = {"store": store}
 
@@ -86,8 +94,33 @@ def create_app(agents_factory=None, store=None, runner=run_case, warm=None, cloc
     async def health():
         return {"ok": True}
 
+    @web.get("/api/limits")
+    async def limits(request: Request):
+        if guard is None:
+            return {"live": True, "left": None, "remaining": {}}
+        decision = await asyncio.to_thread(guard.status, caller_address(request))
+        return {
+            "live": decision.ok,
+            "reason": decision.reason,
+            "left": decision.left,
+            "remaining": decision.remaining,
+            "message": decision.message,
+        }
+
     @web.post("/api/cases")
-    async def create_case(body: NewCase):
+    async def create_case(body: NewCase, request: Request):
+        if guard is not None:
+            decision = await asyncio.to_thread(guard.reserve, caller_address(request))
+            if not decision.ok:
+                return JSONResponse(
+                    {
+                        "error": "limit",
+                        "reason": decision.reason,
+                        "message": decision.message,
+                        "remaining": decision.remaining,
+                    },
+                    status_code=429,
+                )
         case_id = new_case_id()
         try:
             doc = await runner(case_id, body.notes, get_agents(), get_store())
