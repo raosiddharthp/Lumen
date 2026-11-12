@@ -32,7 +32,7 @@ async def run_gate(case_id: str, claims: list[Claim], stage: str, lookup=None):
             usage = getattr(event, "usage_metadata", None)
             if usage:
                 tok_in += usage.prompt_token_count or 0
-                tok_out += usage.candidates_token_count or 0
+                tok_out += (usage.candidates_token_count or 0) + (getattr(usage, "thoughts_token_count", 0) or 0)
             if event.is_final_response() and event.content:
                 text = event.content.parts[0].text
         try:
