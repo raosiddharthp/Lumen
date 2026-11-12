@@ -32,6 +32,11 @@ A running log of design decisions and the mistakes that shaped them.
 | D24 | The app uses the same image as the three agents. The `APP` variable picks which process starts. | One image to build and store, and one lock file to keep current. |
 | D25 | Private testing goes through `gcloud run services proxy`, a local tunnel that adds the tester's credentials. | The service can be tried in a browser without being made public. |
 | D26 | Each build gets its own image tag, and a tag is never reused. Image versions that no service uses are deleted by hand. | A moved tag leaves an orphaned version. An automatic cleanup rule could delete an image that a running revision still needs. |
+| D27 | Spend is capped by counting live cases, not tokens. A case measured about 0.32 cents (5,144 input and 1,306 output tokens at $0.25 and $1.50 per million), and the guard plans on 1 cent. | A case's worst case is bounded, so a count protects the budget with far less code. Supersedes D18. |
+| D28 | Three limits apply to live runs: 2 per visitor per day, 6 per day and 60 per month, all set by environment variables. A slot is reserved in a Firestore transaction before any agent is called, is not refunded if the run fails, and the guard refuses when its counters cannot be read. | Planned at the 1-cent cost, the month limit is at most 0.60 USD. A refusal costs nothing, and a broken guard must never let spend through. |
+| D29 | A visitor is a keyed hash of the caller's address (the last `X-Forwarded-For` entry), and the raw address is never stored. | The per-visitor limit is for fairness. The global limits are what protect the budget. |
+| D30 | Case IDs carry 64 random bits. | On a public service, a guessable ID would let anyone read or sign off another visitor's case. |
+| D31 | A recorded run, a real case saved as a JSON snapshot in the image, is shown automatically when a live run is refused, fails or cannot be reached. It is labelled with its date and is read-only. | The demo always shows something real, and it never presents a recording as a live run. |
 
 ## Mistakes
 
@@ -55,3 +60,6 @@ A running log of design decisions and the mistakes that shaped them.
 | M16 | The design doc gave the AI Act high-risk date as 2 August 2026. That was right when written, and 13 days later Regulation (EU) 2026/1744 moved it to 2 December 2027. A countdown tied to a legal date went stale and then wrong. | Dates corrected with the regulation reference, countdown computed (D19). Check legal dates against current sources before each release. |
 | M17 | A patch script used doubled backslashes in a quoted heredoc, so its anchor never matched. | The assert stopped it before writing. Use real `\n` escapes in patch scripts. |
 | M18 | A build-and-deploy block with a fixed tag was run twice, so the `v5` tag moved and left an unused 92 MB image version. The legacy builder also rebuilds the dependency layer on every build, so each build adds about 55 MB to a 0.5 GB free tier. | The orphan is deleted, and each build now gets its own tag (D26). Registry size is checked before each new build. |
+| M19 | A search command used an unquoted `--include=*.py`, and zsh stopped it with "no matches found". | Quote glob patterns in commands. |
+| M20 | I predicted the registry size would drop by about 100 MB after deleting two image versions. The figure did not change straight away. | Treat the size figure as lagging, and recheck the next day before building again. |
+| M21 | I estimated a case at 30,000 input and 3,000 output tokens before measuring. The measured figure was about 5,100 and 1,300. | Measure first, then set limits, and keep a safety factor on the measurement. |
